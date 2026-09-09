@@ -617,3 +617,11 @@ footer {
         height: 180px;
     }
 }
+
+.resume-embed{
+    align-items: center;
+    display: block;
+    width: 80% ;
+    height: 1000x;
+    margin: 80px auto 0;
+}
