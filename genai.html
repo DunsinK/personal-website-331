@@ -1,12 +1,1244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-Gen | Pixel World Tour</title>
+
+<!--
+=====================================================================
+ AI-Gen.html  .  Pixel World Tour
+ Author: Dunsin  .  Computer Science, Texas A&M University
+ Built for SWE class. Single file. Only external dependency is
+ three.js r128 loaded from cdnjs (see script tag at the bottom).
+=====================================================================
+
+ PROMPT LOG
+ Every prompt sent to Claude for this file, in order. Append new
+ ones below as the file evolves.
+
+ [Prompt 1]  (with 2 image attachments: a hand sketch labeled
+             "AI-Gen" showing a globe on a panel, and a wireframe
+             showing a "Go back" button top-left, a centered
+             "Map of the World" image with a plane and compass, and
+             "Previous" / "next" buttons in the bottom corners)
+
+ "I'm making an AI-Gen.html for my SWE class I want you to take this
+  sketch and wireframe and make a self-contained html file which will
+  use three.js to make a pixelated rotating world where you can travel
+  accross the different places I've been i may add more later but for
+  now include
+
+  Katy,tx to Nigeria to Congo to Kenya to Scotland to Katy,tx (3rd
+  grade forgot a lot before) to TAMU college station where I'm studying
+  computer science now, ill add in more photos later
+
+  lastly in the html file have a comment with all the prompts i send
+  to you"
+
+ [Prompt 2]  (add the next prompt here)
+
+=====================================================================
+
+ HOW TO EDIT THIS FILE
+
+ 1. Add or change a stop
+    Find the STOPS array in the script below. Each entry is:
+      { chapter, place, region, lat, lon, note, photos: [] }
+    Order in the array is the travel order, and the flight paths
+    between stops are generated from that order. Get lat/lon from
+    Google Maps: right-click a spot and the first line is "lat, lon".
+
+ 2. Add photos
+    Drop image files next to this HTML file and list them on the stop:
+      photos: [
+        { src: 'photos/lagos-market.jpg', caption: 'Lagos, 2011' },
+        { src: 'photos/nairobi.jpg',      caption: 'Nairobi' }
+      ]
+    Any stop with an empty photos array shows a placeholder frame, so
+    the page still looks finished before the photos exist.
+
+ 3. Change the copy
+    The `note` field on each stop is placeholder text written from
+    the little I know. Rewrite it in your own voice.
+
+ 4. Tune the look
+    PIXEL_SIZE  -> how chunky the render is (higher = blockier)
+    MAP_W/MAP_H -> resolution of the generated world texture
+    PALETTE     -> every color used by the globe and the map
+=====================================================================
+-->
+
+<style>
+  :root{
+    --void:#0b0d1c;
+    --hull:#161a33;
+    --hull-lit:#1e2444;
+    --edge:#2f3766;
+    --ink:#e8ecff;
+    --ink-dim:#8f98c9;
+    --amber:#ffb62e;
+    --sky:#63d9ff;
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{height:100%;margin:0}
+
+  body{
+    background:
+      radial-gradient(1200px 700px at 70% -10%, #1a2148 0%, transparent 60%),
+      var(--void);
+    color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .mono{
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  }
+
+  /* ---------- shell ---------- */
+
+  #app{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    max-width:1240px;
+    margin:0 auto;
+    padding:18px 20px 22px;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:14px;
+  }
+
+  .brand{
+    flex:1;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    min-width:0;
+  }
+
+  .brand h1{
+    margin:0;
+    font-size:26px;
+    font-weight:600;
+    letter-spacing:.02em;
+  }
+
+  .brand p{
+    margin:0;
+    font-size:13px;
+    color:var(--ink-dim);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  /* ---------- buttons ---------- */
+
+  button{
+    font:inherit;
+    color:var(--ink);
+    background:var(--hull);
+    border:2px solid var(--edge);
+    border-radius:2px;
+    padding:9px 16px;
+    cursor:pointer;
+    box-shadow:0 3px 0 #0a0c18;
+    transition:transform .08s steps(2), background .12s linear;
+  }
+  button:hover:not(:disabled){background:var(--hull-lit)}
+  button:active:not(:disabled){transform:translateY(3px);box-shadow:0 0 0 #0a0c18}
+  button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+  button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+
+  .btn-mono{
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:13px;
+    letter-spacing:.04em;
+  }
+
+  .btn-key{min-width:132px;text-align:center}
+
+  #playBtn{min-width:104px}
+
+  /* ---------- main ---------- */
+
+  main{
+    flex:1;
+    display:grid;
+    grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
+    gap:18px;
+    align-items:stretch;
+  }
+
+  .frame{
+    position:relative;
+    background:#080a15;
+    border:2px solid var(--edge);
+    border-radius:2px;
+    overflow:hidden;
+    min-height:420px;
+  }
+
+  #canvasWrap{position:absolute;inset:0;cursor:grab}
+  #canvasWrap.dragging{cursor:grabbing}
+  #canvasWrap canvas{display:block;width:100%;height:100%}
+
+  /* projected marker labels */
+  #labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+  .label{
+    position:absolute;
+    transform:translate(-50%,-140%);
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px;
+    letter-spacing:.03em;
+    padding:2px 6px;
+    background:rgba(8,10,21,.82);
+    border:1px solid var(--edge);
+    color:var(--ink-dim);
+    white-space:nowrap;
+    opacity:0;
+    transition:opacity .18s linear;
+  }
+  .label.on{opacity:1}
+  .label.now{color:#0b0d1c;background:var(--amber);border-color:var(--amber)}
+
+  .frame-note{
+    position:absolute;
+    left:10px;
+    bottom:8px;
+    font-size:11px;
+    color:#5f6796;
+    pointer-events:none;
+  }
+
+  #fallback{
+    position:absolute;
+    inset:0;
+    display:none;
+    place-content:center;
+    padding:32px;
+    text-align:center;
+    line-height:1.6;
+  }
+  #fallback.on{display:grid}
+
+  /* ---------- panel ---------- */
+
+  #panel{
+    background:var(--hull);
+    border:2px solid var(--edge);
+    border-radius:2px;
+    padding:20px 20px 22px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    overflow:auto;
+  }
+
+  .chapter{
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;
+    color:var(--amber);
+    letter-spacing:.08em;
+  }
+
+  #place{
+    margin:0;
+    font-size:30px;
+    font-weight:600;
+    line-height:1.1;
+  }
+
+  #region{margin:2px 0 0;font-size:15px;color:var(--ink-dim)}
+
+  #note{
+    margin:0;
+    font-size:16px;
+    line-height:1.65;
+    max-width:62ch;
+    color:#d3d9f6;
+  }
+
+  #coords{
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;
+    color:#6c74a6;
+  }
+
+  #photos{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+  #photos figure{margin:0}
+  #photos img{
+    width:100%;
+    aspect-ratio:4/3;
+    object-fit:cover;
+    display:block;
+    border:2px solid var(--edge);
+    image-rendering:auto;
+  }
+  #photos figcaption{
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:11px;
+    color:var(--ink-dim);
+    margin-top:4px;
+  }
+  .slot{
+    grid-column:1 / -1;
+    border:2px dashed #39406f;
+    padding:16px;
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12px;
+    line-height:1.6;
+    color:#6c74a6;
+  }
+
+  .divider{height:2px;background:var(--edge);border:0;margin:2px 0}
+
+  #legList{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  #legList button{
+    width:100%;
+    text-align:left;
+    background:transparent;
+    border:0;
+    box-shadow:none;
+    padding:7px 8px;
+    font-family:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:12.5px;
+    color:var(--ink-dim);
+    display:flex;
+    gap:10px;
+    border-left:3px solid transparent;
+  }
+  #legList button:hover{background:var(--hull-lit);color:var(--ink)}
+  #legList button:active{transform:none}
+  #legList li.on button{color:var(--ink);border-left-color:var(--amber);background:var(--hull-lit)}
+  #legList .n{color:#5f6796;width:2ch}
+
+  /* ---------- footer ---------- */
+
+  footer{
+    margin-top:16px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  #dots{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    gap:8px;
+  }
+  #dots button{
+    width:14px;
+    height:14px;
+    padding:0;
+    background:var(--hull);
+    border:2px solid var(--edge);
+    box-shadow:none;
+  }
+  #dots button[aria-current="true"]{background:var(--amber);border-color:var(--amber)}
+  #dots button:active{transform:none}
+
+  @media (max-width:900px){
+    main{grid-template-columns:1fr}
+    .frame{min-height:52vh}
+    #place{font-size:25px}
+    .btn-key{min-width:0}
+    header{flex-wrap:wrap}
+    .brand p{display:none}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    button{transition:none}
+    .label{transition:none}
+  }
+</style>
 </head>
+
 <body>
-    <h1>GenAI</h1>
+<div id="app">
+
+  <header>
+    <button>home</button>
+    <a href = "index.html" class = "btn-mono">Home</a>
+    <button id="backBtn" class="btn-mono" href = "index.html">Go back</button>
+    <div class="brand">
+      <h1>Places I have lived</h1>
+      <p>Katy to Lagos to Kinshasa to Nairobi to Edinburgh to Katy to College Station</p>
+    </div>
+    <button id="playBtn" class="btn-mono">Play route</button>
+  </header>
+
+  <main>
+    <div class="frame">
+      <div id="canvasWrap"></div>
+      <div id="labels"></div>
+      <p class="frame-note">Drag to spin. Scroll to zoom. Click a pin to jump.</p>
+      <div id="fallback">
+        <p>The globe needs three.js, and the copy on this page could not reach
+        the CDN. Connect to the internet and reload, or drop
+        <span class="mono">three.min.js</span> next to this file and point the
+        script tag at it.</p>
+      </div>
+    </div>
+
+    <aside id="panel">
+      <span class="chapter mono" id="chapter">Stop 1 of 7</span>
+      <div>
+        <h2 id="place">Katy, Texas</h2>
+        <p id="region">United States</p>
+      </div>
+      <span id="coords">29.79 N, 95.82 W</span>
+      <p id="note"></p>
+      <div id="photos"></div>
+      <hr class="divider">
+      <ul id="legList"></ul>
+    </aside>
+  </main>
+
+  <footer>
+    <button id="prevBtn" class="btn-mono btn-key">Previous</button>
+    <div id="dots"></div>
+    <button id="nextBtn" class="btn-mono btn-key">Next</button>
+  </footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  /* =================================================================
+     1. THE TRIP
+     Order here is the travel order. Add stops anywhere in the array
+     and the flight paths, pins, dots and side list all follow.
+     ================================================================= */
+
+  var STOPS = [
+    {
+      chapter: 'Where it starts',
+      place: 'Katy, Texas',
+      region: 'United States',
+      lat: 29.7858, lon: -95.8245,
+      note: 'Home base. Flat, humid, and the first place on this map I can point to without help.',
+      photos: ["./photos/photo1.jpg"]
+    },
+    {
+      chapter: 'Nigeria',
+      place: 'Lagos',
+      region: 'Nigeria',
+      lat: 6.5244, lon: 3.3792,
+      note: 'Family, language, and food that no restaurant in Texas has managed to copy yet.',
+      photos: []
+    },
+    {
+      chapter: 'Congo',
+      place: 'Kinshasa',
+      region: 'Democratic Republic of the Congo',
+      lat: -4.4419, lon: 15.2663,
+      note: 'A city on the river, loud in the best way. Write down what you remember before it fades.',
+      photos: []
+    },
+    {
+      chapter: 'Kenya',
+      place: 'Nairobi',
+      region: 'Kenya',
+      lat: -1.2864, lon: 36.8172,
+      note: 'Highland air at 5,800 feet, and the only capital in the world with a national park in it.',
+      photos: []
+    },
+    {
+      chapter: 'Scotland',
+      place: 'Edinburgh',
+      region: 'Scotland',
+      lat: 55.9533, lon: -3.1883,
+      note: 'Third grade. Most of the detail is gone, which is exactly why this stop is on the map.',
+      photos: []
+    },
+    {
+      chapter: 'Back to Texas',
+      place: 'Katy, Texas',
+      region: 'United States',
+      lat: 29.7858, lon: -95.8245,
+      note: 'The long leg home, and the second time this pin gets planted.',
+      photos: []
+    },
+    {
+      chapter: 'Now',
+      place: 'College Station',
+      region: 'Texas A&M University',
+      lat: 30.6280, lon: -96.3344,
+      note: 'Studying computer science at Texas A&M. Ninety miles from where the map started.',
+      photos: []
+    }
+  ];
+
+  /* =================================================================
+     2. LOOK AND FEEL
+     ================================================================= */
+
+  var PIXEL_SIZE = 4;      // screen pixels per rendered pixel
+  var MAP_W = 288;         // world texture width  (1.25 deg per pixel)
+  var MAP_H = 144;         // world texture height
+  var GLOBE_R = 1.2;
+
+  var PALETTE = {
+    deepOcean:  [22, 44, 82],
+    ocean:      [29, 79, 122],
+    shelf:      [52, 118, 158],
+    shore:      [214, 198, 142],
+    grass:      [76, 154, 90],
+    forest:     [48, 112, 72],
+    dry:        [186, 156, 96],
+    desert:     [208, 178, 112],
+    ice:        [226, 236, 246],
+    tundra:     [150, 168, 158],
+    grid:       [38, 92, 136]
+  };
+
+  /* =================================================================
+     3. DOM
+     ================================================================= */
+
+  var $ = function (id) { return document.getElementById(id); };
+  var wrap = $('canvasWrap');
+  var labelLayer = $('labels');
+
+  if (typeof THREE === 'undefined') {
+    $('fallback').classList.add('on');
+    wrap.style.display = 'none';
+    labelLayer.style.display = 'none';
+  }
+
+  /* =================================================================
+     4. WORLD MAP TEXTURE
+     Coastlines are rough lon/lat polygons, filled onto a small canvas
+     and then run through a per-pixel pass that picks a color by
+     latitude band plus noise, and lightens coastal pixels. Nearest
+     filtering keeps every pixel square on the sphere.
+     ================================================================= */
+
+  var LAND = [
+    // North America
+    [[-168,65],[-160,71],[-140,70],[-125,70],[-110,68],[-95,68],[-85,70],[-80,73],
+     [-70,68],[-64,60],[-55,52],[-60,46],[-67,45],[-70,42],[-75,35],[-81,25],[-83,29],
+     [-90,29],[-97,26],[-97,22],[-105,20],[-97,16],[-92,15],[-84,10],[-78,8],[-82,9],
+     [-88,16],[-95,18],[-105,22],[-114,30],[-120,34],[-124,42],[-125,49],[-135,58],
+     [-150,59],[-158,56],[-165,60]],
+    // South America
+    [[-78,8],[-72,11],[-62,10],[-52,5],[-50,0],[-44,-2],[-35,-5],[-38,-13],[-48,-25],
+     [-55,-35],[-57,-38],[-62,-40],[-65,-45],[-68,-52],[-75,-53],[-73,-45],[-71,-35],
+     [-70,-20],[-75,-14],[-81,-6],[-80,0],[-77,7]],
+    // Africa
+    [[-17,15],[-16,20],[-10,27],[-5,32],[2,36],[10,37],[20,32],[30,31],[34,28],[37,22],
+     [39,15],[43,11],[51,12],[48,5],[41,-2],[40,-10],[35,-18],[33,-25],[27,-33],[20,-34],
+     [18,-32],[13,-22],[9,-2],[9,4],[5,4],[0,5],[-8,4],[-13,8],[-17,12]],
+    // Eurasia
+    [[-6,36],[-9,39],[-9,43],[-2,44],[3,43],[9,44],[13,45],[16,42],[19,40],[23,38],
+     [26,40],[29,41],[33,36],[36,36],[36,31],[34,29],[38,21],[44,12],[52,18],[57,23],
+     [48,30],[56,26],[61,25],[66,25],[68,23],[72,21],[73,16],[77,8],[80,10],[80,15],
+     [84,19],[87,21],[89,22],[92,21],[95,16],[98,9],[100,13],[103,10],[105,11],[107,15],
+     [108,21],[112,22],[117,23],[121,30],[122,37],[126,40],[129,35],[128,43],[135,45],
+     [141,52],[143,53],[150,59],[160,62],[170,66],[180,67],[180,71],[170,70],[160,71],
+     [150,72],[140,73],[130,74],[120,74],[110,76],[100,77],[90,76],[80,74],[70,73],
+     [60,71],[50,69],[40,68],[33,70],[28,71],[24,71],[20,70],[15,68],[12,65],[5,62],
+     [6,58],[8,58],[9,57],[8,54],[4,52],[0,51],[-1,49],[-4,48],[-2,46],[-2,44]],
+    // Greenland
+    [[-45,60],[-50,65],[-55,70],[-58,76],[-50,82],[-30,83],[-22,75],[-25,70],[-35,65]],
+    // Great Britain
+    [[-5,50],[-6,53],[-5,58],[-2,58],[0,54],[1,52],[-4,50]],
+    // Ireland
+    [[-10,52],[-10,54],[-6,55],[-6,52]],
+    // Iceland
+    [[-24,65],[-14,66],[-14,64],[-22,63]],
+    // Japan
+    [[130,32],[135,34],[139,35],[141,41],[145,44],[141,45],[138,37],[135,33]],
+    // Madagascar
+    [[43,-12],[50,-15],[48,-25],[44,-22]],
+    // Australia
+    [[114,-22],[113,-26],[115,-34],[120,-34],[129,-32],[135,-35],[138,-35],[141,-38],
+     [145,-38],[150,-37],[153,-30],[153,-25],[146,-19],[142,-11],[137,-12],[136,-15],
+     [130,-11],[126,-14],[122,-17]],
+    // New Zealand
+    [[173,-35],[178,-38],[174,-42],[171,-45],[166,-46],[170,-43],[172,-40]],
+    // Sumatra, Java, Borneo, New Guinea, Philippines
+    [[95,5],[98,2],[106,-6],[103,-6],[97,1]],
+    [[105,-6],[114,-8],[114,-7],[105,-5]],
+    [[109,2],[117,4],[119,-3],[110,-3]],
+    [[131,-1],[141,-3],[151,-8],[147,-9],[137,-8],[132,-4]],
+    [[121,18],[124,12],[126,7],[122,6],[120,13]],
+    // Cuba and Hispaniola
+    [[-84,22],[-77,20],[-74,20],[-80,23]],
+    [[-73,19],[-69,19],[-68,18],[-72,18]],
+    // Sri Lanka
+    [[80,9],[82,7],[80,6]],
+    // Antarctica
+    [[-180,-63],[-140,-66],[-100,-72],[-60,-63],[-20,-70],[20,-68],[60,-66],[100,-66],
+     [140,-66],[180,-70],[180,-90],[-180,-90]]
+  ];
+
+  function lonToX(lon) { return (lon + 180) / 360 * MAP_W; }
+  function latToY(lat) { return (90 - lat) / 180 * MAP_H; }
+
+  // deterministic value noise so the map looks the same on every load
+  function hash2(x, y) {
+    var n = Math.sin(x * 127.1 + y * 311.7) * 43758.5453;
+    return n - Math.floor(n);
+  }
+  function noise2(x, y) {
+    var xi = Math.floor(x), yi = Math.floor(y);
+    var xf = x - xi, yf = y - yi;
+    var u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    var a = hash2(xi, yi), b = hash2(xi + 1, yi);
+    var c = hash2(xi, yi + 1), d = hash2(xi + 1, yi + 1);
+    return (a * (1 - u) + b * u) * (1 - v) + (c * (1 - u) + d * u) * v;
+  }
+
+  function buildMapTexture() {
+    // pass one: solid land mask
+    var mask = document.createElement('canvas');
+    mask.width = MAP_W; mask.height = MAP_H;
+    var m = mask.getContext('2d');
+    m.fillStyle = '#000';
+    m.fillRect(0, 0, MAP_W, MAP_H);
+    m.fillStyle = '#fff';
+    for (var i = 0; i < LAND.length; i++) {
+      var poly = LAND[i];
+      m.beginPath();
+      for (var j = 0; j < poly.length; j++) {
+        var x = lonToX(poly[j][0]), y = latToY(poly[j][1]);
+        if (j === 0) m.moveTo(x, y); else m.lineTo(x, y);
+      }
+      m.closePath();
+      m.fill();
+    }
+
+    var raw = m.getImageData(0, 0, MAP_W, MAP_H).data;
+    var isLand = new Uint8Array(MAP_W * MAP_H);
+    for (var p = 0; p < isLand.length; p++) isLand[p] = raw[p * 4] > 127 ? 1 : 0;
+
+    function land(x, y) {
+      if (y < 0 || y >= MAP_H) return 0;
+      var xx = ((x % MAP_W) + MAP_W) % MAP_W;      // wrap around the globe
+      return isLand[y * MAP_W + xx];
+    }
+
+    // pass two: color it
+    var out = document.createElement('canvas');
+    out.width = MAP_W; out.height = MAP_H;
+    var o = out.getContext('2d');
+    var img = o.createImageData(MAP_W, MAP_H);
+    var d = img.data;
+
+    for (var y2 = 0; y2 < MAP_H; y2++) {
+      var lat = 90 - (y2 + 0.5) / MAP_H * 180;
+      var alat = Math.abs(lat);
+      for (var x2 = 0; x2 < MAP_W; x2++) {
+        var k = (y2 * MAP_W + x2) * 4;
+        var n = noise2(x2 / 7, y2 / 7) * 0.65 + noise2(x2 / 2.5, y2 / 2.5) * 0.35;
+        var c;
+
+        if (land(x2, y2)) {
+          var coastal = !land(x2 - 1, y2) || !land(x2 + 1, y2) ||
+                        !land(x2, y2 - 1) || !land(x2, y2 + 1);
+          if (alat > 66)                    c = n > 0.45 ? PALETTE.ice : PALETTE.tundra;
+          else if (alat > 58)               c = n > 0.5 ? PALETTE.tundra : PALETTE.forest;
+          else if (alat > 17 && alat < 33)  c = n > 0.5 ? PALETTE.desert : PALETTE.dry;
+          else                              c = n > 0.48 ? PALETTE.grass : PALETTE.forest;
+          if (coastal && alat <= 66)        c = PALETTE.shore;
+        } else {
+          var nearLand = land(x2 - 1, y2) || land(x2 + 1, y2) ||
+                         land(x2, y2 - 1) || land(x2, y2 + 1) ||
+                         land(x2 - 2, y2) || land(x2 + 2, y2);
+          if (alat > 74)         c = PALETTE.ice;
+          else if (nearLand)     c = PALETTE.shelf;
+          else                   c = n > 0.52 ? PALETTE.ocean : PALETTE.deepOcean;
+
+          // faint graticule every 30 degrees, ocean only
+          var onGrid = (x2 % Math.round(MAP_W / 12) === 0) ||
+                       (y2 % Math.round(MAP_H / 6) === 0);
+          if (onGrid && alat <= 74) c = PALETTE.grid;
+        }
+
+        d[k] = c[0]; d[k + 1] = c[1]; d[k + 2] = c[2]; d[k + 3] = 255;
+      }
+    }
+    o.putImageData(img, 0, 0);
+
+    var tex = new THREE.CanvasTexture(out);
+    tex.magFilter = THREE.NearestFilter;
+    tex.minFilter = THREE.NearestFilter;
+    tex.generateMipmaps = false;
+    tex.wrapS = THREE.RepeatWrapping;
+    return tex;
+  }
+
+  /* =================================================================
+     5. SCENE
+     ================================================================= */
+
+  var renderer, scene, camera, globe, plane, rt, quadScene, quadCam;
+  var pins = [], legLines = [], legCurves = [], labels = [];
+  var ready = false;
+
+  var DEG = Math.PI / 180;
+
+  function latLonToVec3(lat, lon, r) {
+    var phi = (90 - lat) * DEG;
+    var theta = (lon + 180) * DEG;
+    return new THREE.Vector3(
+      -r * Math.sin(phi) * Math.cos(theta),
+       r * Math.cos(phi),
+       r * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  // rotation that brings a surface point to face the camera at +z
+  function rotationFor(lat, lon) {
+    var v = latLonToVec3(lat, lon, 1);
+    var h = Math.sqrt(v.x * v.x + v.z * v.z);
+    return { x: Math.atan2(v.y, h), y: Math.atan2(-v.x, v.z) };
+  }
+
+  function arcPoints(a, b, segments, lift) {
+    var angle = a.angleTo(b);
+    var sin = Math.sin(angle);
+    var pts = [];
+    for (var i = 0; i <= segments; i++) {
+      var t = i / segments, v;
+      if (sin < 1e-6) {
+        v = a.clone();
+      } else {
+        v = a.clone().multiplyScalar(Math.sin((1 - t) * angle) / sin)
+             .add(b.clone().multiplyScalar(Math.sin(t * angle) / sin));
+      }
+      v.normalize().multiplyScalar(GLOBE_R + lift * Math.sin(Math.PI * t) + 0.006);
+      pts.push(v);
+    }
+    return pts;
+  }
+
+  function boxMesh(w, h, dp, color) {
+    return new THREE.Mesh(
+      new THREE.BoxGeometry(w, h, dp),
+      new THREE.MeshLambertMaterial({ color: color })
+    );
+  }
+
+  function buildPlane() {
+    var g = new THREE.Group();
+    var body = boxMesh(0.028, 0.028, 0.13, 0xf4f7ff);
+    var wing = boxMesh(0.15, 0.014, 0.038, 0xdfe6ff);
+    var tail = boxMesh(0.06, 0.012, 0.026, 0xffb62e);
+    var fin  = boxMesh(0.012, 0.045, 0.026, 0xffb62e);
+    wing.position.z = -0.005;
+    tail.position.z = -0.052;
+    fin.position.set(0, 0.026, -0.052);
+    g.add(body, wing, tail, fin);
+    g.visible = false;
+    return g;
+  }
+
+  function init() {
+    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false });
+    renderer.setPixelRatio(1);
+    renderer.setClearColor(0x080a15, 1);
+    wrap.appendChild(renderer.domElement);
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 0, 3.6);
+
+    // globe
+    globe = new THREE.Group();
+    globe.rotation.order = 'XYZ';
+    scene.add(globe);
+
+    var earth = new THREE.Mesh(
+      new THREE.SphereGeometry(GLOBE_R, 64, 40),
+      new THREE.MeshLambertMaterial({ map: buildMapTexture() })
+    );
+    globe.add(earth);
+
+    // thin blocky halo so the silhouette reads against the background
+    var halo = new THREE.Mesh(
+      new THREE.SphereGeometry(GLOBE_R * 1.045, 40, 26),
+      new THREE.MeshBasicMaterial({
+        color: 0x3f7fc4, transparent: true, opacity: 0.16,
+        side: THREE.BackSide, depthWrite: false
+      })
+    );
+    scene.add(halo);
+
+    scene.add(new THREE.AmbientLight(0x6f7bb5, 0.85));
+    var sun = new THREE.DirectionalLight(0xfff2d6, 0.95);
+    sun.position.set(2.4, 1.4, 3);
+    scene.add(sun);
+
+    // stars, drawn as square points because point sprites have no texture
+    var starGeo = new THREE.BufferGeometry();
+    var starPos = new Float32Array(700 * 3);
+    for (var s = 0; s < 700; s++) {
+      var v = new THREE.Vector3(
+        Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1
+      );
+      if (v.length() < 0.001) v.set(1, 0, 0);
+      v.normalize().multiplyScalar(14 + Math.random() * 12);
+      starPos[s * 3] = v.x; starPos[s * 3 + 1] = v.y; starPos[s * 3 + 2] = v.z;
+    }
+    starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+    scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({
+      color: 0x9fb0e8, size: 2, sizeAttenuation: false
+    })));
+
+    // pins
+    for (var i = 0; i < STOPS.length; i++) {
+      var stop = STOPS[i];
+      var normal = latLonToVec3(stop.lat, stop.lon, 1);
+      var pin = new THREE.Group();
+
+      var stem = boxMesh(0.014, 0.014, 0.1, 0x63d9ff);
+      stem.position.z = 0.05;
+      var head = boxMesh(0.05, 0.05, 0.05, 0x63d9ff);
+      head.position.z = 0.12;
+      pin.add(stem, head);
+
+      pin.position.copy(normal).multiplyScalar(GLOBE_R - 0.01);
+      pin.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
+      pin.userData.index = i;
+      pin.userData.head = head;
+      pin.userData.stem = stem;
+      pin.userData.normal = normal;
+      globe.add(pin);
+      pins.push(pin);
+
+      var el = document.createElement('div');
+      el.className = 'label mono';
+      el.textContent = stop.place;
+      labelLayer.appendChild(el);
+      labels.push(el);
+    }
+
+    // flight paths
+    for (var k = 0; k < STOPS.length - 1; k++) {
+      var a = latLonToVec3(STOPS[k].lat, STOPS[k].lon, 1);
+      var b = latLonToVec3(STOPS[k + 1].lat, STOPS[k + 1].lon, 1);
+      var lift = 0.05 + a.angleTo(b) * 0.11;
+      var pts = arcPoints(a, b, 96, lift);
+      legCurves.push(pts);
+      var line = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(pts),
+        new THREE.LineBasicMaterial({
+          color: 0x4a7fd6, transparent: true, opacity: 0.55
+        })
+      );
+      globe.add(line);
+      legLines.push(line);
+    }
+
+    plane = buildPlane();
+    globe.add(plane);
+
+    // low resolution render target, upscaled with nearest filtering.
+    // this is what makes the whole scene look pixelated, not just the map.
+    rt = new THREE.WebGLRenderTarget(2, 2, {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat
+    });
+    quadScene = new THREE.Scene();
+    quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    quadScene.add(new THREE.Mesh(
+      new THREE.PlaneGeometry(2, 2),
+      new THREE.MeshBasicMaterial({ map: rt.texture })
+    ));
+
+    resize();
+    window.addEventListener('resize', resize);
+    ready = true;
+  }
+
+  function resize() {
+    var w = Math.max(1, wrap.clientWidth);
+    var h = Math.max(1, wrap.clientHeight);
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    rt.setSize(Math.max(2, Math.ceil(w / PIXEL_SIZE)),
+               Math.max(2, Math.ceil(h / PIXEL_SIZE)));
+  }
+
+  /* =================================================================
+     6. STATE AND MOVEMENT
+     ================================================================= */
+
+  var view = 'overview';       // 'overview' or 'stop'
+  var current = 0;
+  var rot = { x: 0.25, y: 0.6 };
+  var target = { x: 0.25, y: 0.6 };
+  var dist = 3.6, distTarget = 3.6;
+
+  var flight = null;           // { leg, dir, t, dur }
+  var playing = false, playTimer = null;
+
+  function shortestTo(from, to) {
+    while (to - from > Math.PI) to -= Math.PI * 2;
+    while (to - from < -Math.PI) to += Math.PI * 2;
+    return to;
+  }
+
+  function goTo(index, animateFlight) {
+    index = Math.max(0, Math.min(STOPS.length - 1, index));
+    var prev = current;
+    current = index;
+    view = 'stop';
+    distTarget = 2.85;
+
+    var r = rotationFor(STOPS[index].lat, STOPS[index].lon);
+    target.x = r.x;
+    target.y = shortestTo(rot.y, r.y);
+
+    if (animateFlight && prev !== index && Math.abs(prev - index) === 1) {
+      var leg = Math.min(prev, index);
+      flight = { leg: leg, dir: index > prev ? 1 : -1, t: 0, dur: 1500 };
+    } else {
+      flight = null;
+      if (plane) plane.visible = false;
+    }
+    render();
+  }
+
+  function goOverview() {
+    view = 'overview';
+    distTarget = 4.15;
+    target.x = 0.32;
+    flight = null;
+    if (plane) plane.visible = false;
+    stopPlay();
+    render();
+  }
+
+  function startPlay() {
+    playing = true;
+    $('playBtn').textContent = 'Stop';
+    if (view !== 'stop') goTo(0, false);
+    tickPlay();
+  }
+  function stopPlay() {
+    playing = false;
+    $('playBtn').textContent = 'Play route';
+    clearTimeout(playTimer);
+  }
+  function tickPlay() {
+    clearTimeout(playTimer);
+    playTimer = setTimeout(function () {
+      if (!playing) return;
+      if (current >= STOPS.length - 1) { stopPlay(); return; }
+      goTo(current + 1, true);
+      tickPlay();
+    }, 2600);
+  }
+
+  /* =================================================================
+     7. RENDER LOOP
+     ================================================================= */
+
+  var lastTime = 0;
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (!ready) return;
+    var dt = Math.min(50, now - lastTime || 16);
+    lastTime = now;
+
+    if (view === 'overview' && !dragging) target.y += 0.00035 * dt;
+
+    rot.x += (target.x - rot.x) * 0.09;
+    rot.y += (target.y - rot.y) * 0.09;
+    rot.x = Math.max(-1.25, Math.min(1.25, rot.x));
+    globe.rotation.x = rot.x;
+    globe.rotation.y = rot.y;
+
+    dist += (distTarget - dist) * 0.08;
+    camera.position.z = dist;
+
+    // pin pulse
+    for (var i = 0; i < pins.length; i++) {
+      var isNow = (view === 'stop' && i === current);
+      var head = pins[i].userData.head;
+      var stem = pins[i].userData.stem;
+      var pulse = isNow ? 1.25 + Math.sin(now / 220) * 0.22 : 1;
+      head.scale.setScalar(pulse);
+      head.material.color.setHex(isNow ? 0xffb62e : 0x63d9ff);
+      stem.material.color.setHex(isNow ? 0xffb62e : 0x3f8fb8);
+    }
+
+    // leg highlighting
+    for (var L = 0; L < legLines.length; L++) {
+      var active = (view === 'stop') && (L === current - 1 || L === current);
+      legLines[L].material.color.setHex(active ? 0xffb62e : 0x4a7fd6);
+      legLines[L].material.opacity = view === 'overview' ? 0.6 : (active ? 0.95 : 0.3);
+    }
+
+    // plane along the current leg
+    if (flight) {
+      flight.t += dt / flight.dur;
+      var pts = legCurves[flight.leg];
+      if (flight.t >= 1) {
+        flight = null;
+        plane.visible = false;
+      } else if (pts) {
+        var u = flight.dir === 1 ? flight.t : 1 - flight.t;
+        var idx = Math.min(pts.length - 2, Math.floor(u * (pts.length - 1)));
+        var here = pts[idx];
+        var ahead = pts[flight.dir === 1 ? idx + 1 : Math.max(0, idx - 1)];
+        // orient in globe-local space: +z along the flight path, +y away
+        // from the surface. lookAt() would use world space and fight the
+        // globe's own rotation, so build the basis by hand.
+        var fwd = ahead.clone().sub(here);
+        if (fwd.lengthSq() < 1e-12) fwd.set(0, 0, 1);
+        fwd.normalize();
+        var up = here.clone().normalize();
+        var right = new THREE.Vector3().crossVectors(up, fwd).normalize();
+        var trueUp = new THREE.Vector3().crossVectors(fwd, right).normalize();
+        plane.visible = true;
+        plane.position.copy(here);
+        plane.quaternion.setFromRotationMatrix(
+          new THREE.Matrix4().makeBasis(right, trueUp, fwd)
+        );
+      }
+    }
+
+    // project labels
+    var w = wrap.clientWidth, h = wrap.clientHeight;
+    var camDir = camera.position.clone().normalize();
+    for (var j = 0; j < labels.length; j++) {
+      var worldNormal = pins[j].userData.normal.clone()
+        .applyEuler(globe.rotation).normalize();
+      var facing = worldNormal.dot(camDir);
+      var showIt = facing > 0.16 && (view === 'overview' || j === current || facing > 0.72);
+      var el = labels[j];
+      if (!showIt) { el.classList.remove('on'); continue; }
+      var pos = pins[j].userData.normal.clone()
+        .multiplyScalar(GLOBE_R + 0.16).applyEuler(globe.rotation).project(camera);
+      el.style.left = ((pos.x * 0.5 + 0.5) * w) + 'px';
+      el.style.top = ((-pos.y * 0.5 + 0.5) * h) + 'px';
+      el.classList.add('on');
+      el.classList.toggle('now', view === 'stop' && j === current);
+    }
+
+    renderer.setRenderTarget(rt);
+    renderer.render(scene, camera);
+    renderer.setRenderTarget(null);
+    renderer.render(quadScene, quadCam);
+  }
+
+  /* =================================================================
+     8. INPUT
+     ================================================================= */
+
+  var dragging = false, moved = 0, lastX = 0, lastY = 0;
+
+  function pointerDown(e) {
+    dragging = true; moved = 0;
+    lastX = e.clientX; lastY = e.clientY;
+    wrap.classList.add('dragging');
+    wrap.setPointerCapture && wrap.setPointerCapture(e.pointerId);
+  }
+  function pointerMove(e) {
+    if (!dragging) return;
+    var dx = e.clientX - lastX, dy = e.clientY - lastY;
+    lastX = e.clientX; lastY = e.clientY;
+    moved += Math.abs(dx) + Math.abs(dy);
+    target.y += dx * 0.006;
+    target.x = Math.max(-1.25, Math.min(1.25, target.x - dy * 0.005));
+    rot.y += dx * 0.006;
+    rot.x = Math.max(-1.25, Math.min(1.25, rot.x - dy * 0.005));
+    stopPlay();
+  }
+  function pointerUp(e) {
+    if (!dragging) return;
+    dragging = false;
+    wrap.classList.remove('dragging');
+    if (moved < 6) pickPin(e);
+  }
+
+  var hasTHREE = (typeof THREE !== 'undefined');
+  var ray = hasTHREE ? new THREE.Raycaster() : null;
+  var ndc = hasTHREE ? new THREE.Vector2() : null;
+
+  function pickPin(e) {
+    if (!ray) return;
+    var rect = wrap.getBoundingClientRect();
+    ndc.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    ndc.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    var hits = ray.intersectObjects(pins, true);
+    if (!hits.length) return;
+    var obj = hits[0].object;
+    while (obj && obj.userData.index === undefined) obj = obj.parent;
+    if (obj) { stopPlay(); goTo(obj.userData.index, true); }
+  }
+
+  function wheel(e) {
+    e.preventDefault();
+    distTarget = Math.max(2.1, Math.min(6, distTarget + e.deltaY * 0.0022));
+  }
+
+  if (typeof THREE !== 'undefined') {
+    wrap.addEventListener('pointerdown', pointerDown);
+    wrap.addEventListener('pointermove', pointerMove);
+    wrap.addEventListener('pointerup', pointerUp);
+    wrap.addEventListener('pointercancel', pointerUp);
+    wrap.addEventListener('wheel', wheel, { passive: false });
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight') { stopPlay(); goTo(current + 1, true); }
+    else if (e.key === 'ArrowLeft') { stopPlay(); goTo(current - 1, true); }
+    else if (e.key === 'Escape') goOverview();
+  });
+
+  $('nextBtn').addEventListener('click', function () {
+    stopPlay();
+    if (view === 'overview') goTo(0, false); else goTo(current + 1, true);
+  });
+  $('prevBtn').addEventListener('click', function () {
+    stopPlay(); goTo(current - 1, true);
+  });
+  $('backBtn').addEventListener('click', goOverview);
+  $('playBtn').addEventListener('click', function () {
+    if (playing) stopPlay(); else startPlay();
+  });
+
+  /* =================================================================
+     9. PANEL RENDERING
+     ================================================================= */
+
+  function coordText(lat, lon) {
+    var ns = lat >= 0 ? 'N' : 'S';
+    var ew = lon >= 0 ? 'E' : 'W';
+    return Math.abs(lat).toFixed(2) + ' ' + ns + ', ' + Math.abs(lon).toFixed(2) + ' ' + ew;
+  }
+
+  function buildLegList() {
+    var ul = $('legList');
+    ul.innerHTML = '';
+    STOPS.forEach(function (stop, i) {
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.innerHTML = '<span class="n">' + (i + 1) + '</span><span>' +
+        stop.place + '</span>';
+      b.addEventListener('click', function () { stopPlay(); goTo(i, true); });
+      li.appendChild(b);
+      ul.appendChild(li);
+    });
+  }
+
+  function buildDots() {
+    var box = $('dots');
+    box.innerHTML = '';
+    STOPS.forEach(function (stop, i) {
+      var b = document.createElement('button');
+      b.setAttribute('aria-label', 'Go to ' + stop.place);
+      b.addEventListener('click', function () { stopPlay(); goTo(i, true); });
+      box.appendChild(b);
+    });
+  }
+
+  function render() {
+    var stop = STOPS[current];
+
+    if (view === 'overview') {
+      $('chapter').textContent = 'The whole route';
+      $('place').textContent = 'Seven stops, three continents';
+      $('region').textContent = 'Spin the globe, or start at the beginning';
+      $('coords').textContent = STOPS.length + ' pins on the map';
+      $('note').textContent = 'Every pin is somewhere I have actually lived or ' +
+        'stayed. Press Next to fly the route in order, or click any pin to drop ' +
+        'straight into it.';
+      $('photos').innerHTML = '';
+    } else {
+      $('chapter').textContent = 'Stop ' + (current + 1) + ' of ' + STOPS.length +
+        '  .  ' + stop.chapter;
+      $('place').textContent = stop.place;
+      $('region').textContent = stop.region;
+      $('coords').textContent = coordText(stop.lat, stop.lon);
+      $('note').textContent = stop.note;
+
+      var box = $('photos');
+      box.innerHTML = '';
+      if (stop.photos && stop.photos.length) {
+        stop.photos.forEach(function (ph) {
+          var fig = document.createElement('figure');
+          var img = document.createElement('img');
+          img.src = ph.src;
+          img.alt = ph.caption || stop.place;
+          img.loading = 'lazy';
+          fig.appendChild(img);
+          if (ph.caption) {
+            var cap = document.createElement('figcaption');
+            cap.textContent = ph.caption;
+            fig.appendChild(cap);
+          }
+          box.appendChild(fig);
+        });
+      } else {
+        var slot = document.createElement('div');
+        slot.className = 'slot';
+        slot.textContent = 'No photos yet. Add them to STOPS[' + current +
+          '].photos in this file:  { src: "photos/name.jpg", caption: "..." }';
+        box.appendChild(slot);
+      }
+    }
+
+    // nav state
+    $('prevBtn').disabled = (view === 'stop' && current === 0);
+    $('nextBtn').disabled = (view === 'stop' && current === STOPS.length - 1);
+    $('backBtn').disabled = (view === 'overview');
+
+    var items = $('legList').children;
+    for (var i = 0; i < items.length; i++) {
+      items[i].classList.toggle('on', view === 'stop' && i === current);
+    }
+    var dots = $('dots').children;
+    for (var j = 0; j < dots.length; j++) {
+      dots[j].setAttribute('aria-current', String(view === 'stop' && j === current));
+    }
+  }
+
+  /* =================================================================
+     10. START
+     ================================================================= */
+
+  buildLegList();
+  buildDots();
+
+  if (typeof THREE !== 'undefined') {
+    init();
+    goOverview();
+    requestAnimationFrame(frame);
+  } else {
+    render();
+  }
+})();
+</script>
 </body>
 </html>
