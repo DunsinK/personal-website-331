@@ -1240,5 +1240,69 @@
   }
 })();
 </script>
+<p>
+  Prompt: 
+  =====================================================================
+ AI-Gen.html  .  Pixel World Tour
+ Author: Dunsin  .  Computer Science, Texas A&M University
+ Built for SWE class. Single file. Only external dependency is
+ three.js r128 loaded from cdnjs (see script tag at the bottom).
+=====================================================================
+
+ PROMPT LOG
+ Every prompt sent to Claude for this file, in order. Append new
+ ones below as the file evolves.
+
+ [Prompt 1]  (with 2 image attachments: a hand sketch labeled
+             "AI-Gen" showing a globe on a panel, and a wireframe
+             showing a "Go back" button top-left, a centered
+             "Map of the World" image with a plane and compass, and
+             "Previous" / "next" buttons in the bottom corners)
+
+ "I'm making an AI-Gen.html for my SWE class I want you to take this
+  sketch and wireframe and make a self-contained html file which will
+  use three.js to make a pixelated rotating world where you can travel
+  accross the different places I've been i may add more later but for
+  now include
+
+  Katy,tx to Nigeria to Congo to Kenya to Scotland to Katy,tx (3rd
+  grade forgot a lot before) to TAMU college station where I'm studying
+  computer science now, ill add in more photos later
+
+  lastly in the html file have a comment with all the prompts i send
+  to you"
+
+ [Prompt 2]  (add the next prompt here)
+
+=====================================================================
+
+ HOW TO EDIT THIS FILE
+
+ 1. Add or change a stop
+    Find the STOPS array in the script below. Each entry is:
+      { chapter, place, region, lat, lon, note, photos: [] }
+    Order in the array is the travel order, and the flight paths
+    between stops are generated from that order. Get lat/lon from
+    Google Maps: right-click a spot and the first line is "lat, lon".
+
+ 2. Add photos
+    Drop image files next to this HTML file and list them on the stop:
+      photos: [
+        { src: 'photos/lagos-market.jpg', caption: 'Lagos, 2011' },
+        { src: 'photos/nairobi.jpg',      caption: 'Nairobi' }
+      ]
+    Any stop with an empty photos array shows a placeholder frame, so
+    the page still looks finished before the photos exist.
+
+ 3. Change the copy
+    The `note` field on each stop is placeholder text written from
+    the little I know. Rewrite it in your own voice.
+
+ 4. Tune the look
+    PIXEL_SIZE  -> how chunky the render is (higher = blockier)
+    MAP_W/MAP_H -> resolution of the generated world texture
+    PALETTE     -> every color used by the globe and the map
+=====================================================================
+</p>
 </body>
 </html>
