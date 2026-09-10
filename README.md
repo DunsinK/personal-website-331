@@ -33,3 +33,11 @@ Also Available at https://tx.ag/dunsink
 
   lastly in the html file have a comment with all the prompts i send
   to you"
+
+#External Links 
+Linkedin: https://www.linkedin.com/in/dunsink
+Github: https://github.com/dunsink
+Resume 
+AggieAgenda: https://www.aggieagenda.com/
+
+#Peer Review Feedback
