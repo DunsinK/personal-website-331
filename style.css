@@ -482,6 +482,11 @@ h2 {
     margin-top: 2rem;
     flex-wrap: wrap;
 }
+.contact-icon {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 0.5rem;
+}
 
 .contact-link {
     display: flex;
