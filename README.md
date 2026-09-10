@@ -37,7 +37,17 @@ Also Available at https://tx.ag/dunsink
 #External Links 
 Linkedin: https://www.linkedin.com/in/dunsink
 Github: https://github.com/dunsink
-Resume 
+Resume: "https://drive.google.com/file/d/1RrMUj6UQQXvrb2BX2YzJBGKZNa12cp7g/preview"
 AggieAgenda: https://www.aggieagenda.com/
+Devpost: https://www.devpost.com/dunsink
 
 #Peer Review Feedback
+
+Jadon Lee: 
+Everything's broken; half the links are still in development. Likes the glass navigation when you scroll down 
+
+Lloyd D Alba: 
+Really Clean and professional design and styling, but some of the pages are blank (about section) but overall pretty good 
+
+Sean Gao
+Looks very nice, a little too nice. Very nice animations. The About Me and main picture are mid; add more different pictures instead of the same one over and over again.
