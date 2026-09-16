@@ -14,6 +14,8 @@
     --accent: #9aa0a6;
     --accent-strong: #2b2b2b;
     --line: rgba(0, 0, 0, 0.08);
+    --line-strong: rgba(0, 0, 0, 0.14);
+    --bg-card: rgba(255, 255, 255, 0.92);
     --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.08);
     --shadow-tight: 0 6px 18px rgba(0, 0, 0, 0.08);
     --bg-light: var(--bg-alt);
@@ -253,7 +255,6 @@ section {
     margin: 0 auto;
 }
 
-
 /* #region About Section */
 #about {
     background: transparent;
@@ -356,25 +357,29 @@ section {
 
 .projects-grid {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.75rem;
     list-style: none;
     padding: 0;
     margin: 0 auto;
-    max-width: 900px;
+    max-width: 1500px;
 }
 
 .project-card {
-    background: var(--bg-elev);
+    background: var(--bg-card, var(--bg-elev));
     border-radius: 18px;
     overflow: hidden;
-    box-shadow: var(--shadow-tight);
-    border: 1px solid var(--line);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--line-strong, var(--line));
     backdrop-filter: blur(10px);
-    transition: transform 0.3s;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
     width: 100%;
     display: flex;
     flex-direction: row;
+}
+
+.project-card.is-featured {
+    border-color: rgba(0, 0, 0, 0.22);
 }
 
 .project-card.is-clickable {
@@ -400,13 +405,17 @@ section {
 
 .project-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);
+    border-color: rgba(0, 0, 0, 0.24);
 }
 
 .project-image {
-    width: 260px;
-    min-width: 260px;
-    min-height: 180px;
-    background: linear-gradient(135deg, #ffffff, var(--bg-alt));
+    flex: 0 0 40%;
+    min-width: 0;
+    min-height: 200px;
+    align-self: stretch;
+    background: linear-gradient(135deg, var(--bg-alt), #dcdcdc);
+    border-right: 1px solid var(--line-strong, var(--line));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -423,6 +432,10 @@ section {
 
 .project-content {
     padding: 1.5rem;
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .project-tags {
@@ -433,7 +446,8 @@ section {
 }
 
 .project-links {
-    margin-top: 0.75rem;
+    margin-top: auto;
+    padding-top: 0.75rem;
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -443,6 +457,11 @@ section {
     color: var(--primary-color);
     font-weight: 600;
     text-decoration: none;
+    border-bottom: 1px solid transparent;
+}
+
+.project-link:hover {
+    border-bottom-color: currentColor;
 }
 
 .easter-egg {
@@ -463,11 +482,131 @@ section {
 .project-card h3 {
     color: var(--ink);
     margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
 }
 
 .project-card p {
     color: var(--ink-muted);
     margin-bottom: 1rem;
+}
+
+/* Photo dump: thumbnail strip + shared lightbox */
+.project-photos {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.photo-thumb {
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border: 1px solid var(--line-strong, var(--line));
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-alt);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-thumb:hover {
+    transform: translateY(-2px);
+}
+
+.photo-thumb:hover,
+.photo-thumb:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+.photo-thumb.photo-more {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    font-family: inherit;
+}
+
+#photo-lightbox {
+    padding: 0;
+    border: none;
+    border-radius: 18px;
+    max-width: min(92vw, 960px);
+    background: var(--bg-card, var(--white));
+    color: var(--ink);
+    box-shadow: var(--shadow-soft);
+}
+
+#photo-lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.72);
+}
+
+.lightbox-frame {
+    display: block;
+    margin: 0;
+}
+
+.lightbox-frame img {
+    display: block;
+    width: 100%;
+    max-height: 72vh;
+    object-fit: contain;
+    background: #111111;
+}
+
+.lightbox-frame figcaption {
+    padding: 0.85rem 1.25rem;
+    color: var(--ink-muted);
+    font-size: 0.9rem;
+}
+
+.lightbox-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem 1.1rem;
+}
+
+.lightbox-bar button {
+    font: inherit;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--bg-alt);
+    border: 1px solid var(--line-strong, var(--line));
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+}
+
+.lightbox-bar button:hover {
+    background: var(--white);
+}
+
+.lightbox-count {
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .project-card,
+    .photo-thumb {
+        transition: none;
+    }
+
+    .project-card:hover,
+    .photo-thumb:hover {
+        transform: none;
+    }
 }
 
 /*#endregion*/
@@ -525,7 +664,8 @@ section {
 }
 
 .tag {
-    background: var(--bg-alt);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--line);
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
     font-size: 0.85rem;
@@ -686,9 +826,12 @@ footer {
     }
 
     .project-image {
+        flex: none;
         width: 100%;
         min-width: unset;
         height: 180px;
+        border-right: none;
+        border-bottom: 1px solid var(--line-strong, var(--line));
     }
 }
 
