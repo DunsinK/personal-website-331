@@ -5,22 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Organizations, service, and activities - Dunsin Komolafe">
     <title>Activities | Dunsin Komolafe</title>
-    <link rel="stylesheet" href="style.css">
+    <link id = "stylesheet" rel="stylesheet" href="./styles/style1.css">
 </head>
 <body>
     <!-- Navigation -->
     <nav>
         <div class="container">
             <a href="./index.html" class="logo">DK</a>
-            <ul> 
+            <ul> <!-- will make this alligned middle  -->
                 <li><a href="./portfolio.html">Portfolio</a></li>
                 <li><a href="./qualifications.html">Qualifications</a></li>
                 <li><a href="./activities.html">Activities</a></li>
                 <li><a href = "./resume.html">Resume</a></li>
                 <li><a href="./sandbox.html">Sandbox</a></li>
-                <li><button class="nav-button">Change Style</button></li>
+                <li><button class="nav-button" onclick="toggleStyleSheet()">Change Style</button></li>
+                <script src="./src/theme.js"></script> 
             </ul>
-
+            
         </div>
     </nav>
 
