@@ -142,3 +142,15 @@
         }
     }
 })();
+
+function openPopup(){
+    console.log("seeing if this went through")
+    popup = document.getElementById("popup")
+    popup.showModal();
+}
+
+function closePopup(){
+    console.log("closing popup")
+    popup = document.getElementById("popup")
+    popup.close();
+}

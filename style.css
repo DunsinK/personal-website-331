@@ -135,7 +135,7 @@ nav a:hover {
     background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), rgba(245, 245, 245, 0.6)),
         linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(235, 235, 235, 0.9));
     color: var(--ink);
-    padding: 120px 2rem 80px;
+    padding: 50px 2rem 50px;
     text-align: center;
     margin-top: 60px;
 }
