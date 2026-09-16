@@ -1,4 +1,4 @@
-
+/* #region Home Page Styles */
 * {
     margin: 0;
     padding: 0;
@@ -62,8 +62,9 @@ body::after {
     left: -120px;
     animation-delay: 2s;
 }
+/* #endregion Home Page Styles */
 
-/* Navigation */
+/* #region Navigation */
 nav {
     background: var(--bg-elev);
     backdrop-filter: blur(12px);
@@ -129,8 +130,10 @@ nav a:hover {
     outline: 2px solid var(--ink);
     outline-offset: 2px;
 }
+/* #endregion Navigation Page Styles */
 
-/* Hero Section */
+
+/* #region potfoltio page hero (i think) */
 .hero {
     background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), rgba(245, 245, 245, 0.6)),
         linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(235, 235, 235, 0.9));
