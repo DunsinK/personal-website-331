@@ -62,6 +62,14 @@ body::after {
     left: -120px;
     animation-delay: 2s;
 }
+
+h2 {
+    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-size: 2.6rem;
+    margin-bottom: 3rem;
+    text-align: center;
+    color: var(--ink);
+}
 /* #endregion Home Page Styles */
 
 /* #region Navigation */
@@ -131,7 +139,6 @@ nav a:hover {
     outline-offset: 2px;
 }
 /* #endregion Navigation Page Styles */
-
 
 /* #region potfoltio page hero (i think) */
 .hero {
@@ -234,6 +241,7 @@ nav a:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
+/* #endregion Home Page Styles */
 
 /* Section Styles */
 section {
@@ -245,15 +253,8 @@ section {
     margin: 0 auto;
 }
 
-h2 {
-    font-family: 'Fraunces', 'Times New Roman', serif;
-    font-size: 2.6rem;
-    margin-bottom: 3rem;
-    text-align: center;
-    color: var(--ink);
-}
 
-/* About Section */
+/* #region About Section */
 #about {
     background: transparent;
 }
@@ -307,8 +308,9 @@ h2 {
     color: var(--ink-muted);
     margin-bottom: 1rem;
 }
+/*#endregion*/
 
-/* Skills Section */
+/* #region Skills Section */
 .skills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -345,8 +347,9 @@ h2 {
     color: var(--ink);
     margin-bottom: 1rem;
 }
+/*#endregion*/
 
-/* Projects Section */
+/* #region Projects Section */
 #projects {
     background: transparent;
 }
@@ -467,6 +470,9 @@ h2 {
     margin-bottom: 1rem;
 }
 
+/*#endregion*/
+
+/* #region other for now */
 /* Experience Section */
 .experience-grid {
     display: grid;
@@ -526,12 +532,6 @@ h2 {
     color: var(--ink-muted);
 }
 
-/* Contact Section */
-.contact-content {
-    max-width: 600px;
-    margin: 0 auto;
-    text-align: center;
-}
 
 .contact-links {
     display: flex;
@@ -540,27 +540,6 @@ h2 {
     gap: 1.5rem;
     margin-top: 2rem;
     flex-wrap: wrap;
-}
-
-.contact-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--ink);
-    padding: 1.5rem;
-    background: var(--bg-elev);
-    border-radius: 16px;
-    box-shadow: var(--shadow-tight);
-    border: 1px solid var(--line);
-    backdrop-filter: blur(10px);
-    transition: all 0.3s;
-    min-width: 150px;
-}
-
-.contact-link:hover {
-    transform: translateY(-5px);
-    color: var(--ink);
 }
 
 .contact-icon {
@@ -723,3 +702,5 @@ footer {
 .grayscale{
   filter:  contrast(150%) brightness(0%);
 }
+
+/*#endregion*/
