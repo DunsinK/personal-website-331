@@ -1121,4 +1121,8 @@ section {
     scroll-behavior: auto !important;
   }
 }
-```
+
+.grayscale{
+  filter: grayscale(100%);
+}
+

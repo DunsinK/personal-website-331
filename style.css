@@ -630,3 +630,6 @@ footer {
     height: 1000px;
     margin: 80px auto 0;
 }
+.grayscale{
+  filter:  contrast(150%) brightness(0%);
+}
