@@ -20,6 +20,17 @@
     const allContainer = document.getElementById("projects-list");
 
     const lightbox = createLightbox();
+    const details = createDetailsModal();
+
+    window.openPopup = function (projectId) {
+        const project = projects.find((item) => item.id === projectId);
+        if (project) {
+            details.open(project, getPhotos(project));
+        }
+    };
+    window.closePopup = function () {
+        details.dialog.close();
+    };
 
     if (featuredContainer) {
         renderProjects(featuredContainer, projects.filter((project) => project.featured));
@@ -30,7 +41,7 @@
     }
 
     window.addEventListener("keydown", (event) => {
-        if (event.repeat || (lightbox && lightbox.dialog.open)) {
+        if (event.repeat || document.querySelector("dialog[open]")) {
             return;
         }
         keyBuffer.push(event.key);
@@ -69,26 +80,25 @@
                 card.classList.add("is-featured");
             }
 
-            if (project.detailsUrl) {
-                card.classList.add("is-clickable");
-                card.setAttribute("role", "button");
-                card.setAttribute("tabindex", "0");
-                card.addEventListener("click", (event) => {
-                    if (event.target.closest("a, button")) {
-                        return;
-                    }
-                    window.location.href = project.detailsUrl;
-                });
-                card.addEventListener("keydown", (event) => {
-                    if (event.target.closest("a, button")) {
-                        return;
-                    }
-                    if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        window.location.href = project.detailsUrl;
-                    }
-                });
-            }
+            card.classList.add("is-clickable");
+            card.setAttribute("role", "button");
+            card.setAttribute("tabindex", "0");
+            card.setAttribute("aria-haspopup", "dialog");
+            card.addEventListener("click", (event) => {
+                if (event.target.closest("a, button")) {
+                    return;
+                }
+                details.open(project, photos);
+            });
+            card.addEventListener("keydown", (event) => {
+                if (event.target.closest("a, button")) {
+                    return;
+                }
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    details.open(project, photos);
+                }
+            });
 
             const image = document.createElement("div");
             image.className = "project-image";
@@ -198,6 +208,7 @@
     function createLightbox() {
         const dialog = document.createElement("dialog");
         dialog.id = "photo-lightbox";
+        dialog.className = "centered-dialog";
 
         const figure = document.createElement("figure");
         figure.className = "lightbox-frame";
@@ -281,6 +292,145 @@
         };
     }
 
+    // Bigger centered card: one dialog reused for every project.
+    function createDetailsModal() {
+        const dialog = document.createElement("dialog");
+        dialog.id = "popup";
+        dialog.className = "project-modal centered-dialog";
+        dialog.setAttribute("aria-labelledby", "popup-title");
+
+        const close = document.createElement("button");
+        close.type = "button";
+        close.className = "modal-close";
+        close.setAttribute("aria-label", "Close project details");
+        close.textContent = "×";
+
+        const media = document.createElement("div");
+        media.className = "modal-media";
+        const hero = document.createElement("img");
+        const heroCaption = document.createElement("p");
+        heroCaption.className = "modal-caption";
+        media.append(hero, heroCaption);
+
+        const body = document.createElement("div");
+        body.className = "modal-body";
+
+        const title = document.createElement("h2");
+        title.id = "popup-title";
+
+        const summary = document.createElement("p");
+        summary.className = "modal-summary";
+
+        const detailText = document.createElement("p");
+        detailText.className = "modal-details";
+
+        const highlights = document.createElement("ul");
+        highlights.className = "modal-highlights";
+
+        const tags = document.createElement("div");
+        tags.className = "project-tags";
+
+        const gallery = document.createElement("div");
+        gallery.className = "modal-gallery";
+
+        const links = document.createElement("div");
+        links.className = "project-links";
+
+        body.append(title, summary, detailText, highlights, tags, gallery, links);
+        dialog.append(close, media, body);
+        document.body.appendChild(dialog);
+
+        close.addEventListener("click", () => dialog.close());
+
+        // Click the backdrop (outside the panel) to dismiss.
+        dialog.addEventListener("click", (event) => {
+            if (event.target === dialog) {
+                dialog.close();
+            }
+        });
+
+        function showPhoto(photo, project) {
+            hero.src = photo.src;
+            hero.alt = photo.caption || project.title + " screenshot";
+            heroCaption.textContent = photo.caption || "";
+            heroCaption.hidden = !photo.caption;
+        }
+
+        return {
+            dialog,
+            open(project, photos) {
+                title.textContent = project.title;
+                summary.textContent = project.description || "";
+                summary.hidden = !project.description;
+
+                detailText.textContent = project.details || "";
+                detailText.hidden = !project.details;
+
+                highlights.innerHTML = "";
+                (project.highlights || []).forEach((item) => {
+                    const li = document.createElement("li");
+                    li.textContent = item;
+                    highlights.appendChild(li);
+                });
+                highlights.hidden = !highlights.children.length;
+
+                tags.innerHTML = "";
+                (project.tags || []).forEach((tag) => {
+                    const tagEl = document.createElement("span");
+                    tagEl.className = "tag";
+                    tagEl.textContent = tag;
+                    tags.appendChild(tagEl);
+                });
+                tags.hidden = !tags.children.length;
+
+                const coverSrc =
+                    project.cover || project.imageUrl || (photos[0] && photos[0].src);
+                if (coverSrc) {
+                    showPhoto({ src: coverSrc, caption: "" }, project);
+                    media.hidden = false;
+                    media.classList.remove("is-emoji");
+                    media.dataset.emoji = "";
+                } else {
+                    hero.removeAttribute("src");
+                    heroCaption.hidden = true;
+                    media.hidden = false;
+                    media.classList.add("is-emoji");
+                    media.dataset.emoji = project.emoji || "📌";
+                }
+
+                gallery.innerHTML = "";
+                if (photos.length > 1) {
+                    photos.forEach((photo, index) => {
+                        const button = document.createElement("button");
+                        button.type = "button";
+                        button.className = "photo-thumb";
+                        button.setAttribute(
+                            "aria-label",
+                            "Show photo " + (index + 1) + " of " + photos.length
+                        );
+                        const img = document.createElement("img");
+                        img.src = photo.src;
+                        img.alt = photo.caption || project.title + " photo";
+                        img.loading = "lazy";
+                        button.appendChild(img);
+                        button.addEventListener("click", () => showPhoto(photo, project));
+                        gallery.appendChild(button);
+                    });
+                }
+                gallery.hidden = !gallery.children.length;
+
+                links.innerHTML = "";
+                addLink(links, project.detailsUrl, "More Info →");
+                addLink(links, project.websiteUrl, "View Website →");
+                addLink(links, project.demoUrl, "Live Demo →");
+                addLink(links, project.repoUrl, "View Repo →");
+                links.hidden = !links.children.length;
+
+                dialog.showModal();
+            }
+        };
+    }
+
     function addLink(container, href, label) {
         if (!href) {
             return;
@@ -312,15 +462,3 @@
         }
     }
 })();
-
-function openPopup(){
-    console.log("seeing if this went through")
-    popup = document.getElementById("popup")
-    popup.showModal();
-}
-
-function closePopup(){
-    console.log("closing popup")
-    popup = document.getElementById("popup")
-    popup.close();
-}
