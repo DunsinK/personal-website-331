@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Organizations, service, and activities - Dunsin Komolafe">
+    <title>Activities | Dunsin Komolafe</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,7 +12,7 @@
     <nav>
         <div class="container">
             <a href="./index.html" class="logo">DK</a>
-            <ul> <!-- will make this alligned middle  -->
+            <ul> 
                 <li><a href="./portfolio.html">Portfolio</a></li>
                 <li><a href="./qualifications.html">Qualifications</a></li>
                 <li><a href="./activities.html">Activities</a></li>
@@ -19,38 +20,87 @@
                 <li><a href="./sandbox.html">Sandbox</a></li>
                 <li><button class="nav-button">Change Style</button></li>
             </ul>
-            
+
         </div>
     </nav>
-    <p>dslfkjdsf</p>
-    <p>dslfkjdsf</p>
-    <p>dslfkjdsf</p>
-    <p>dslfkjdsf</p>
-    <h1>Activities</h1>
 
-    <div> <!--main div-->
-        <ul>
-            <li>Freshman Leadership Organization
-                <div>
-                    <p> - Founder of TAMU FATE a freshman leadership organization at Texas A&M University</p>
-                    <img src="./photos/tamufate.jpg">
-                    <p> -  The organization is designed to help incoming students build friendships, develop their professional networks, and become more connected to campus during their first year. 
-Through this organization, I have also participated in service initiatives, including The Big Event and philanthropic efforts supporting AVM Alliance.</p>
-                </div>
-            </li>
-            <li>Chess
-                <div>
-                    <p> - Co-Founder of Jordan High school chess club</p>
-                </div>
-            </li>
+    <!-- Title -->
+    <section class="hero">
+        <h1>Activities</h1>
+        <p class="tagline">Organizations, service, and what I do outside of class</p>
+    </section>
+
+    <section id="activities">
+        <div class="container">
+            <ul class="activity-list">
+
                 
-            
-            
-            <li>Service Initiatives</li>
-        </ul>
-    </div>
+                <li class="activity-item">
+                    <div class="activity-media">
+                        <figure class="activity-photo">
+                            <img src="./photos/tamufate.jpg" alt="TAMU FATE members at a chapter event" loading="lazy">
+                        </figure>
+                       
+                    </div>
+                    <div class="activity-body">
+                        <h2 class="activity-title">Freshman Leadership Organization</h2>
+                        <p class="activity-role">Founder &middot; TAMU FATE &middot; Texas A&amp;M University</p>
+                        <p>
+                            TAMU FATE is a freshman leadership organization I founded at Texas A&amp;M. It is designed
+                            to help incoming students build friendships, develop their professional networks, and become
+                            more connected to campus during their first year.
+                        </p>
+                        <p>
+                            Through the organization I have also participated in service initiatives, including The Big
+                            Event and philanthropic efforts supporting AVM Alliance.
+                        </p>
+                    </div>
+                </li>
 
-  
+                
+
+
+                <!-- Big Event -->
+                <li class="activity-item">
+                    <div class="activity-media">
+                        <figure class="activity-photo is-logo">
+                            <img
+                                src="https://bigevent.tamu.edu/wp-content/uploads/2026/03/BigEventWhiteOnGreenV4.png"
+                                alt="The Big Event logo"
+                                loading="lazy"
+                            >
+                        </figure>
+                    </div>
+                    <div class="activity-body">
+                        <h2 class="activity-title">The Big Event</h2>
+                        <p class="activity-role">Volunteer &middot; Texas A&amp;M University</p>
+                        <p>
+                            Helped clean up around campus as part of The Big Event, the student-run day of service at
+                            Texas A&amp;M.
+                        </p>
+                    </div>
+                </li>
+
+                <!-- Chess -->
+                <li class="activity-item">
+                    <div class="activity-media">
+                       
+                        <div class="activity-photo is-empty" aria-hidden="true">♟️</div>
+                    </div>
+                    <div class="activity-body">
+                        <h2 class="activity-title">Chess</h2>
+                        <p class="activity-role">Co-Founder &middot; Jordan High School Chess Club</p>
+                        <p>
+                            Co-founded the chess club at Jordan High School.
+                        </p>
+                    </div>
+                </li>
+
+                
+
+            </ul>
+        </div>
+    </section>
 
 </body>
 </html>

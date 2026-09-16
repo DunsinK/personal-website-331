@@ -939,6 +939,119 @@ section {
 
 /*#endregion*/
 
+/* #region Activities Page */
+#activities {
+    background: transparent;
+    padding-top: 3.5rem;
+}
+
+.activity-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+}
+
+.activity-item {
+    display: grid;
+    grid-template-columns: minmax(200px, 300px) 1fr;
+    gap: 2rem;
+    align-items: start;
+    background: var(--bg-card, var(--bg-elev));
+    border: 1px solid var(--line-strong, var(--line));
+    border-radius: 3px;
+    padding: 1.75rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+/* Photos stack in the left column; a second one splits the row. */
+.activity-media {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+}
+
+.activity-photo {
+    margin: 0;
+    border: 1px solid var(--line-strong, var(--line));
+    border-radius: 2px;
+    overflow: hidden;
+    background: var(--bg-alt);
+}
+
+.activity-photo img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+/* Logos get letterboxed instead of cropped, on a dark tile so a
+   white-on-transparent mark stays visible. */
+.activity-photo.is-logo {
+    background: var(--ink);
+}
+
+.activity-photo.is-logo img {
+    object-fit: contain;
+    padding: 1rem;
+}
+
+.activity-photo figcaption {
+    padding: 0.5rem 0.65rem;
+    color: var(--ink-muted);
+    font-size: 0.85rem;
+}
+
+/* Placeholder tile so a photo-less activity keeps the same shape. */
+.activity-photo.is-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--bg-alt), #dcdcdc);
+}
+
+.activity-title {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    text-align: left;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.35rem;
+}
+
+.activity-role {
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    margin-bottom: 1rem;
+}
+
+.activity-body p + p {
+    margin-top: 0.75rem;
+}
+
+.activity-body p:not(.activity-role) {
+    color: var(--ink-muted);
+}
+
+@media (max-width: 768px) {
+    .activity-item {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        padding: 1.25rem;
+    }
+
+    .activity-title {
+        font-size: 1.35rem;
+    }
+}
+
+/*#endregion*/
+
 /* #region other for now */
 /* Experience Section */
 .experience-grid {
