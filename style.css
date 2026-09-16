@@ -6,6 +6,8 @@
 }
 
 :root {
+    --font-display: 'Fraunces', 'Times New Roman', serif;
+    --font-body: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --bg-base: #f5f5f5;
     --bg-alt: #ebebeb;
     --bg-elev: rgba(255, 255, 255, 0.7);
@@ -32,7 +34,7 @@ html {
 }
 
 body {
-    font-family: 'Space Grotesk', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-body);
     line-height: 1.6;
     color: var(--ink);
     background: radial-gradient(circle at 20% 20%, #ffffff 0%, var(--bg-base) 45%, var(--bg-alt) 100%);
@@ -66,7 +68,7 @@ body::after {
 }
 
 h2 {
-    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-family: var(--font-display);
     font-size: 2.6rem;
     margin-bottom: 3rem;
     text-align: center;
@@ -183,7 +185,7 @@ nav a:hover {
 }
 
 .hero h1 {
-    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-family: var(--font-display);
     font-size: 3rem;
     margin-bottom: 0.5rem;
     animation: fadeInUp 1s;
@@ -210,7 +212,7 @@ nav a:hover {
 }
 
 .hero-name {
-    font-family: 'Fraunces', 'Times New Roman', serif;
+    font-family: var(--font-display);
     font-size: 1.75rem;
     line-height: 1.2;
 }
@@ -774,6 +776,169 @@ section {
 
 /*#endregion*/
 
+/* #region Qualifications Page */
+#qualifications {
+    background: transparent;
+    padding-top: 3.5rem;
+}
+
+.qual-intro {
+    max-width: 72ch;
+    margin: 0 auto 3rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.qual-intro p {
+    color: var(--ink-muted);
+    font-size: 1.05rem;
+}
+
+.qual-card {
+    background: var(--bg-card, var(--bg-elev));
+    border: 1px solid var(--line-strong, var(--line));
+    border-radius: 3px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.qual-card:last-child {
+    margin-bottom: 0;
+}
+
+.qual-heading {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    text-align: left;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.5rem;
+}
+
+.qual-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.qual-card-header .qual-heading {
+    margin-bottom: 0;
+}
+
+.qual-action {
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+}
+
+.qual-action:hover {
+    border-bottom-color: var(--ink);
+}
+
+.skill-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.skill-row {
+    display: grid;
+    grid-template-columns: minmax(150px, 210px) 1fr;
+    gap: 0.5rem 1.5rem;
+    align-items: baseline;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.skill-row:first-child {
+    border-top: none;
+    padding-top: 0;
+}
+
+.skill-row:last-child {
+    padding-bottom: 0;
+}
+
+.skill-label {
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.qual-card .tag {
+    border-radius: 3px;
+}
+
+/* Resume embed */
+.resume-frame {
+    border: 1px solid var(--line-strong, var(--line));
+    border-radius: 3px;
+    overflow: hidden;
+    background: var(--bg-alt);
+}
+
+.resume-embed {
+    display: block;
+    width: 80%;
+    height: 1000px;
+    margin: 80px auto 0;
+    border: none;
+}
+
+.resume-frame .resume-embed {
+    width: 100%;
+    height: min(85vh, 900px);
+    margin: 0;
+}
+
+.interest-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.interest-item h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+}
+
+.interest-item p {
+    color: var(--ink-muted);
+}
+
+@media (max-width: 768px) {
+    .qual-card {
+        padding: 1.5rem;
+    }
+
+    .skill-row {
+        grid-template-columns: 1fr;
+        gap: 0.6rem;
+    }
+
+    .qual-heading {
+        font-size: 1.45rem;
+    }
+}
+
+/*#endregion*/
+
 /* #region other for now */
 /* Experience Section */
 .experience-grid {
@@ -1010,13 +1175,6 @@ footer {
     }
 }
 
-.resume-embed{
-    align-items: center;
-    display: block;
-    width: 80% ;
-    height: 1000px;
-    margin: 80px auto 0;
-}
 .grayscale{
   filter:  contrast(150%) brightness(0%);
 }

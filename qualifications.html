@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Technical skills, resume, and areas of interest - Dunsin Komolafe">
+    <title>Qualifications | Dunsin Komolafe</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -19,51 +20,105 @@
                 <li><a href="./sandbox.html">Sandbox</a></li>
                 <li><button class="nav-button">Change Style</button></li>
             </ul>
-            
+
         </div>
     </nav>
 
-    <secion>
-        <p>
-            My technical skills include many modern and popular programming languages and frameworks. Such as Python, C++, JavaScript, TypeScript, C#, and Rust, as well as technologies such as React, Vite, Django, Flask, PostgreSQL, Docker, and Git. I have also worked with tools and frameworks related to artificial intelligence, including LangChain, LangGraph, and LLM APIs.
+    <!-- Title -->
+    <section class="hero">
+        <h1>Qualifications</h1>
+        <p class="tagline">What I build with, and where I want to take it</p>
+    </section>
 
-My primary area of interest within computer science is software engineering, particularly backend development and artificial intelligence. I enjoy backend development because it requires thinking about how systems operate behind the interface that users see. Databases, APIs, authentication, data processing, and system architecture all have to work together reliably for an application to function well. At the same time, I am interested in artificial intelligence because of the possibilities it creates for building software that can reason about information and interact with users in more useful ways. 
+    <section id="qualifications">
+        <div class="container">
+           
+            <section class="qual-card">
+                <h2 class="qual-heading">Technical Skills</h2>
+                <ul class="skill-list">
+                    <li class="skill-row">
+                        <span class="skill-label">Languages</span>
+                        <span class="skill-tags">
+                            <span class="tag">Python</span>
+                            <span class="tag">C++</span>
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">TypeScript</span>
+                            <span class="tag">C#</span>
+                            <span class="tag">Rust</span>
+                        </span>
+                    </li>
+                    <li class="skill-row">
+                        <span class="skill-label">Frameworks &amp; Libraries</span>
+                        <span class="skill-tags">
+                            <span class="tag">React</span>
+                            <span class="tag">Vite</span>
+                            <span class="tag">Django</span>
+                            <span class="tag">Flask</span>
+                            <span class="tag">LangChain</span>
+                            <span class="tag">LangGraph</span>
+                            <span class="tag">LLM APIs</span>
+                        </span>
+                    </li>
+                    <li class="skill-row">
+                        <span class="skill-label">Databases &amp; Tools</span>
+                        <span class="skill-tags">
+                            <span class="tag">PostgreSQL</span>
+                            <span class="tag">Docker</span>
+                            <span class="tag">Git</span>
+                        </span>
+                    </li>
+                </ul>
+            </section>
 
-        </p>
-    </secion>
-    <h1>Qualifications</h1>
-    <div>
-        <h3>Techincal Skills</h3>
-        <ul>
-            <li>Programming Languages: Python, C++, JavaScript, TypeScript, C#, Rust</li>
-            <li>Web Development: React, Vite, Django, Flask</li>
-            <li>Database: PostgreSQL</li>
-            <li>DevOps: Docker, Git</li>
-            <li>Artificial Intelligence: LangChain, LangGraph</li>
-        </ul>
-    
-    </div>
-    
-    <div>
-        <h3>Resume</h3>
-        <iframe
-            class="resume-embed"
-            src="https://drive.google.com/file/d/1RrMUj6UQQXvrb2BX2YzJBGKZNa12cp7g/preview"
-            title="Dunsin Komolafe SWE Resume 2026 - 2027"
-            width="100%"
-            height="800"
-            style="border: none;"
-        ></iframe>
-    </div>
+            <!-- Resume -->
+            <section class="qual-card">
+                <div class="qual-card-header">
+                    <h2 class="qual-heading">Resume</h2>
+                    <a
+                        class="qual-action"
+                        href="https://drive.google.com/file/d/1RrMUj6UQQXvrb2BX2YzJBGKZNa12cp7g/view"
+                        target="_blank"
+                        rel="noopener"
+                    >Open in Drive →</a>
+                </div>
+                <div class="resume-frame">
+                    <iframe
+                        class="resume-embed"
+                        src="https://drive.google.com/file/d/1RrMUj6UQQXvrb2BX2YzJBGKZNa12cp7g/preview"
+                        title="Dunsin Komolafe SWE Resume 2026 - 2027"
+                        loading="lazy"
+                    ></iframe>
+                </div>
+            </section>
 
-    <div>
-        <h3>Areas Of Interest</h3>
-        <ul>
-            <li>Web Development: Interesting in building web applications at scale with thousand, hundred of thousands of users ... </li>
-            <li>Computer Vision: Interested in applying computer vision for automated driving systems, automate consumer tasks, and humanoid robotic solutions</li>
-            <li>Artificial Intelligence: LangChain, LangGraph</li>
-        </ul>
-    
-    </div>
+            <!-- Areas of Interest -->
+            <section class="qual-card">
+                <h2 class="qual-heading">Areas of Interest</h2>
+                <ul class="interest-list">
+                    <li class="interest-item">
+                        <h3>Web Development</h3>
+                        <p>
+                            Interested in building web applications at scale, for thousands to hundreds of thousands of
+                            users.
+                        </p>
+                    </li>
+                    <li class="interest-item">
+                        <h3>Computer Vision</h3>
+                        <p>
+                            Interested in applying computer vision to automated driving systems, automating consumer
+                            tasks, and humanoid robotic solutions.
+                        </p>
+                    </li>
+                    <li class="interest-item">
+                        <h3>Artificial Intelligence</h3>
+                        <p>
+                            Interested in software that can reason about information and interact with users in more
+                            useful ways, built with tools like LangChain and LangGraph.
+                        </p>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </section>
 </body>
 </html>

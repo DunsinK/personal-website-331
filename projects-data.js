@@ -1,6 +1,5 @@
 
-// description -> the one-liner on the card.
-// details     -> the long write-up, shown only in the popup dialog.
+
 window.PROJECTS = [
     {
         id: "aggie-agenda",
