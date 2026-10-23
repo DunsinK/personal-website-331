@@ -1,0 +1,83 @@
+/* Xbox 360 Metro dashboard, with shared content and modal foundations. */
+@import url('./style1.css');
+:root { --ink: #fff; --ink-muted: #e2e2e2; --line: #ffffff28; --accent: #168b00; --font-display: 'Segoe UI Light', 'Segoe UI', sans-serif; --font-body: 'Segoe UI', Arial, sans-serif; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { min-height: 100%; }
+body { min-height: 100vh; margin: 0; padding: 0 0 100px; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; background: radial-gradient(ellipse at 52% 78%, #e2e2e2 0, #b9babb 35%, transparent 70%), linear-gradient(#414345 0%, #747676 34%, #a5a6a6 72%, #818384 100%); background-attachment: fixed; overflow-x: hidden; }
+body::before, body::after, .hero::before, .hero::after { display: none; }
+a { color: inherit; } button { font: inherit; }
+nav { position: relative; inset: auto; height: auto; background: none; backdrop-filter: none; border: 0; box-shadow: none; padding: clamp(95px, 15vh, 155px) 0 24px; z-index: 5; }
+nav .container { width: min(1120px, 82vw); max-width: none; margin: auto; padding: 0; display: flex; gap: 26px; align-items: baseline; }
+nav .logo { color: #c0c0c0; font-size: 24px; font-weight: 300; letter-spacing: -1px; text-shadow: none; }
+nav ul { display: flex; gap: clamp(15px, 2.2vw, 32px); margin: 0; padding: 0; align-items: baseline; flex-wrap: wrap; }
+nav ul li { list-style: none; }
+nav a, nav ul a, .nav-button { padding: 0; color: #c4c4c4; font-size: clamp(18px, 2vw, 28px); font-weight: 300; font-family: 'Segoe UI Light', 'Segoe UI', sans-serif; text-transform: lowercase; text-decoration: none; background: none; border: 0; border-radius: 0; box-shadow: none; letter-spacing: -.6px; transition: color .15s; }
+nav a::after, nav a::before { display: none; }
+nav a:hover, nav a[aria-current='page'], .nav-button:hover { color: #fff; background: none; }
+.nav-button { font-size: 18px; cursor: pointer; }
+.xbox-identity { position: absolute; top: 30px; right: 7%; display: flex; align-items: center; gap: 13px; text-align: right; font-size: 16px; color: #f0f0f0; }
+.xbox-identity small { display: block; font-size: 11px; color: #c8c8c8; margin-top: 2px; }
+.xbox-identity img { width: 36px; height: 36px; object-fit: cover; border: 2px solid #ddd; }
+.xbox-orb { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #fff, #e2e3e3 55%, #777); color: #288707; font-weight: 700; font-size: 31px; font-style: italic; box-shadow: 0 2px 5px #0005; }
+.xbox-dashboard { position: relative; width: min(1030px, 76vw); margin: 0 auto; }
+.xbox-tiles { display: grid; grid-template-columns: 1.03fr 1.35fr 1.35fr 1.03fr; grid-template-rows: repeat(3, clamp(105px, 10.4vw, 150px)); gap: 7px; }
+.xbox-tile { position: relative; display: block; min-width: 0; padding: 0; border: 0; border-radius: 0; overflow: hidden; background: linear-gradient(125deg, #24a609, #087e00); text-decoration: none; color: white; text-align: left; cursor: pointer; box-shadow: 0 3px 5px #0002; transition: transform .16s, box-shadow .16s; }
+.xbox-tile:hover, .xbox-tile:focus-visible { z-index: 3; transform: scale(1.035); outline: 3px solid #fff; outline-offset: 0; box-shadow: 0 9px 20px #0006; }
+.xbox-tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.tile-caption { position: absolute; bottom: 0; left: 0; width: 100%; padding: 7px 10px; background: #0009; font-size: clamp(12px, 1.1vw, 16px); font-weight: 400; line-height: 1.25; }
+.tile-pins .tile-caption, .tile-resume .tile-caption { background: transparent; }
+.tile-agenda { grid-column: 1; grid-row: 1; background: #f5efe9; }
+.tile-agenda img { object-fit: contain; padding: 6px 12px 30px; }
+.tile-pins { grid-column: 1; grid-row: 2; }.tile-resume { grid-column: 1; grid-row: 3; }
+.tile-symbol { position: absolute; width: 48px; height: 48px; top: 40%; left: 50%; transform: translate(-50%, -50%); }
+.tile-profile { grid-column: 2 / 4; grid-row: 1 / 3; background: #232b29; }
+.tile-profile img { position: absolute; width: 57%; right: 0; object-position: center 30%; filter: saturate(.65); }
+.tile-profile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #1b2628 0%, #1b2628ed 33%, transparent 76%); }
+.profile-heading { position: relative; z-index: 1; display: block; padding: 26px 23px; font-size: clamp(30px, 4.1vw, 56px); line-height: 1.04; font-weight: 300; letter-spacing: -1.6px; }
+.profile-heading small { display: block; font-size: 10px; letter-spacing: 1.4px; margin-bottom: 21px; color: #c6d2cf; }
+.profile-heading > span { display: block; margin-top: 15px; font-size: 15px; letter-spacing: 0; }
+.tile-profile .tile-caption { z-index: 2; background: #000b; }.tile-profile .tile-caption > span { float: right; }
+.tile-activities { grid-column: 2; grid-row: 3; }.tile-activities img { object-position: 50% 40%; }
+.tile-sandbox { grid-column: 3; grid-row: 3; background: radial-gradient(ellipse at 75% 10%, #45c5de, transparent 70%), linear-gradient(135deg, #14506e, #153239); }
+.sandbox-art { display: flex; justify-content: center; align-items: center; gap: 10px; font: 72px / 1.3 Consolas, monospace; color: #ffffffab; }.sandbox-art span { font-size: 24px; color: white; }
+.tile-github { grid-column: 4; grid-row: 1; background: linear-gradient(130deg, #e3e8dd, #647968); }.code-art { display: block; text-align: center; font: 58px / 1.7 Consolas, monospace; color: #283e2b; }
+.tile-linkedin { grid-column: 4; grid-row: 2; background: linear-gradient(120deg, #278ca8, #075d80); }.tile-linkedin > strong { display: block; text-align: center; font: bold 80px / 1.3 Arial, sans-serif; }
+.tile-devpost { grid-column: 4; grid-row: 3; background: linear-gradient(120deg, #36b9ab, #067866); }.tile-devpost > strong { display: block; padding: 7px 18px; font-size: clamp(20px, 2.25vw, 30px); font-weight: 800; line-height: .95; letter-spacing: -1px; }.tile-devpost .tile-caption { padding: 4px 10px; font-size: 12px; }
+.xbox-neighbor { position: absolute; right: calc(100% + 55px); top: 38px; width: 180px; opacity: .24; pointer-events: none; }.xbox-neighbor > span { display: block; font-weight: 300; font-size: 22px; padding: 8px; }.xbox-neighbor > div { background: #118e00; min-height: 120px; padding: 20px; margin-bottom: 6px; }.neighbor-right { right: auto; left: calc(100% + 55px); top: 0; }
+.dashboard-subtitle { margin: 22px 0 0; color: #353a36; font-size: 16px; font-weight: 500; }.dashboard-subtitle span { display: block; margin-top: 4px; font-size: 13px; font-weight: 400; }
+.dashboard-contact { margin-top: 12px; font-size: 12px; color: #3c433d; }.dashboard-contact a { text-decoration: none; }.dashboard-contact a:hover { text-decoration: underline; }
+.xbox-theme #home { display: none; }
+.xbox-footer { position: fixed; bottom: 0; left: 0; right: 0; display: flex; align-items: center; gap: 26px; padding: 17px 7%; background: linear-gradient(transparent, #939695 45%); text-align: left; z-index: 6; font-size: 13px; color: #fff; }
+.xbox-footer a, .xbox-footer button { display: inline-flex; align-items: center; gap: 6px; color: inherit; text-decoration: none; background: none; border: none; padding: 0; cursor: pointer; }
+.pad-key { display: inline-grid; place-items: center; width: 21px; height: 21px; border-radius: 50%; margin-right: 5px; font: bold 13px Arial, sans-serif; box-shadow: inset 0 1px 3px #fffa, 0 1px 3px #0006; }.key-a { background: linear-gradient(#8bd344, #318407); }.key-b { background: linear-gradient(#f7836c, #ab291e); }.key-y { background: linear-gradient(#ffe885, #c69710); color: #514015; }
+.keyboard-hint, .xbox-footer-help { color: #f5f5f5; font-size: 11px; }.xbox-wordmark { margin-left: auto; color: #e8eae8; font-size: 23px; font-weight: 300; letter-spacing: -1px; white-space: nowrap; }.xbox-wordmark strong { color: #267a14; font-weight: 400; }
+:focus-visible { outline: 3px solid white; outline-offset: 4px; }
+/* Interior hubs retain all original content and interactions. */
+.hero { min-height: auto; margin: 0 auto 25px; padding: 0; width: min(1030px, 82vw); background: none; display: block; text-align: left; }.hero h1 { font-size: 34px; margin: 0 0 5px; color: #fff; font-weight: 300; letter-spacing: -1px; }.hero .tagline { margin: 0; color: #eee; font-size: 16px; max-width: none; }
+#projects, #activities, #qualifications { padding: 0; background: none; }#projects > .container, #activities > .container, #qualifications > .container { width: min(1030px, 82vw); padding: 0; margin: auto; max-width: none; }
+.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }.project-card, .activity-item, .qual-card { border-radius: 0; border: 0; background: #f0f1eef5; color: #333; box-shadow: 0 3px 6px #0003; animation: none; }.project-card { display: flex; flex-direction: column; overflow: hidden; }.project-card:hover { transform: translateY(-3px); box-shadow: 0 8px 16px #0004; }
+.project-image { flex: none; width: 100%; height: 145px; min-width: 0; background: linear-gradient(120deg, #279d0d, #0b6908); border: 0; border-radius: 0; font-size: 65px; }.project-image img { object-fit: contain; }.project-content { padding: 18px; }.project-content h3 { color: #287d0b; font-size: 23px; font-weight: 400; }.project-content p { color: #444; font-size: 14px; }
+.tag { color: #42503e; border: 0; background: #dce5d7; border-radius: 0; font-size: 12px; }.project-links { gap: 8px; }.project-link, .qual-action { color: #276d12; border-radius: 0; border-color: #a6ba9b; }
+.activity-list { display: grid; gap: 14px; }.activity-item { padding: 0; overflow: hidden; }.activity-body { padding: 25px; }.activity-title { color: #26770e; font-weight: 300; }.activity-role { color: #4e5e47; }.activity-photo { border: 0; border-radius: 0; }.activity-photo.is-empty { background: #168400; }
+.qual-card { padding: 25px; margin-bottom: 14px; }.qual-heading { color: #287d0b; text-align: left; font-weight: 300; margin-bottom: 20px; }.skill-label { color: #333; }.skill-row { border-color: #ccc; }.interest-item { border-radius: 0; background: #e3e8df; border: 0; }.interest-item h3 { color: #287d0b; }.interest-item p { color: #444; }
+.resume-frame { border-radius: 0; }.resume-embed { background: #eee; }body > .resume-embed { display: block; width: min(1030px, 82vw); margin: auto; height: 72vh; }
+dialog { border-radius: 0 !important; color: #333; background: #f1f2ef; border: 0; box-shadow: 0 20px 80px #0008; }dialog::backdrop { background: #172015bb; backdrop-filter: blur(5px); }.project-modal h2 { color: #267b0a; }.modal-body, .modal-summary, .modal-details, .modal-caption { color: #333; }.modal-close, .profile-close { border-radius: 0; background: #21840d; color: white; border: 0; padding: 10px 18px; cursor: pointer; }.modal-media { background: #ccd3c8; }
+.xbox-profile { width: min(850px, 92vw); max-height: 86vh; padding: 30px; margin: auto; }.xbox-profile h1 { font-size: 30px; font-weight: 300; color: #247a0c; margin: 25px 0; }.xbox-profile .hero-intro { display: flex; gap: 25px; align-items: center; }.xbox-profile .hero-photo { width: 165px; height: 210px; border-radius: 0; object-fit: cover; border: 0; }.xbox-profile .hero-name { font-size: 26px; color: #333; }.xbox-profile .hero-subname, .xbox-profile .tagline, .xbox-profile .hero-blurb { color: #444; margin-top: 12px; }.xbox-profile .contact-email, .xbox-profile .contact-email a { color: #333; }.xbox-profile .contact-links { margin-top: 25px; }
+@media (max-width: 1000px) { nav .container { width: 90vw; gap: 18px; } nav ul { gap: 18px; } nav a, nav ul a { font-size: 22px; } .nav-button { font-size: 15px; } .xbox-dashboard { width: 86vw; } .xbox-tiles { grid-template-rows: repeat(3, 125px); } .profile-heading { font-size: 40px; padding: 23px 18px; } .profile-heading small { font-size: 8px; } .projects-grid { grid-template-columns: repeat(2, 1fr); } .xbox-footer-help { display: none; } }
+@media (max-width: 650px) { body { padding-bottom: 95px; } nav { padding-top: 96px; padding-bottom: 20px; } nav .container { width: 92vw; align-items: flex-start; gap: 14px; } nav ul { gap: 8px 16px; } nav a, nav ul a { font-size: 20px; } .nav-button { font-size: 15px; } .xbox-identity { top: 19px; right: 5%; } .xbox-identity small { font-size: 10px; } .xbox-orb { width: 32px; height: 32px; font-size: 24px; } .xbox-dashboard { width: 92vw; } .xbox-tiles { grid-template-columns: repeat(2, 1fr); grid-template-rows: 240px repeat(4, 130px); gap: 7px; } .tile-profile { grid-column: 1 / 3; grid-row: 1; }.tile-agenda { grid-column: 1; grid-row: 2; }.tile-pins { grid-column: 2; grid-row: 2; }.tile-resume { grid-column: 1; grid-row: 3; }.tile-activities { grid-column: 2; grid-row: 3; }.tile-sandbox { grid-column: 1; grid-row: 4; }.tile-github { grid-column: 2; grid-row: 4; }.tile-linkedin { grid-column: 1; grid-row: 5; }.tile-devpost { grid-column: 2; grid-row: 5; }.tile-caption { font-size: 13px; }.tile-devpost > strong { font-size: 28px; }.xbox-neighbor { display: none; }.dashboard-subtitle { font-size: 14px; }.dashboard-subtitle span { font-size: 12px; }.dashboard-contact { font-size: 11px; overflow-wrap: anywhere; }.xbox-footer { gap: 13px; padding: 15px 4%; font-size: 11px; background: #858a85; }.keyboard-hint, .xbox-wordmark { display: none; }.pad-key { width: 19px; height: 19px; }.hero, #projects > .container, #activities > .container, #qualifications > .container { width: 92vw; }.projects-grid { grid-template-columns: 1fr; }.activity-item { display: flex; flex-direction: column; }.skill-row { display: flex; flex-direction: column; align-items: flex-start; }.xbox-profile { padding: 20px; }.xbox-profile .hero-intro { flex-direction: column; }.xbox-profile h1 { font-size: 25px; }.xbox-profile .hero-name { font-size: 22px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+/* Fit the full dashboard and contact strip in a typical laptop viewport. */
+html { overflow-x: clip; }
+nav .container { justify-content: flex-start; }
+.xbox-tiles { grid-template-rows: repeat(3, clamp(100px, 15.5vh, 145px)); }
+.tile-profile img { top: 0; }
+.profile-heading { font-size: clamp(32px, 3.4vw, 48px); padding-top: 20px; }
+.profile-heading small { margin-bottom: 14px; }
+.profile-heading > span { margin-top: 12px; }
+@media (max-width: 650px) { .xbox-tiles { grid-template-rows: 240px repeat(4, 130px); }.profile-heading { font-size: 40px; } }
+:root { --bg-card: #f1f2ef; }
+.hero, .hero h1, .hero .tagline, .hero-content { animation: none; opacity: 1; }
+.project-image { min-height: 145px; }
+.activity-body p:not(.activity-role) { color: #444; }
+.project-modal { color: #333; background: #f1f2ef; }

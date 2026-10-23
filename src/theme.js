@@ -1,25 +1,99 @@
-function toggleStyleSheet(){
-    //localStorage.setItem("theme","./styles/style1.css")
-    let current = localStorage.getItem("theme");
-    
-    console.log(current)
-    if (current == "./styles/style1.css"){
-        current = "./styles/style2.css"
-    }
-    else{
-        current = "./styles/style1.css"
-    }
-
-    localStorage.setItem("theme", current)
-    document.getElementById("stylesheet").setAttribute("href", current);
-
-        
+const STYLES = ['./styles/style1.css', './styles/style2.css', './styles/style3.css'];
+function currentStyleIndex() {
+    try { return Math.max(0, STYLES.indexOf(localStorage.getItem('theme'))); } catch { return 0; }
 }
-
-function load(){
-    val = localStorage.getItem("theme"); 
-    document.getElementById("stylesheet").setAttribute("href",val)
+function setStyleSheet(href) {
+    document.getElementById('stylesheet').setAttribute('href', href);
+    const xbox = href === STYLES[2];
+    document.documentElement.classList.toggle('xbox-theme', xbox);
+    document.querySelectorAll('[data-dashboard]').forEach(node => { node.hidden = !xbox; });
+    if (!xbox) document.querySelector('.xbox-profile[open]')?.close();
 }
-
-
-window.onload = load()
+function toggleStyleSheet() {
+    const current = STYLES.indexOf(document.getElementById('stylesheet').getAttribute('href'));
+    const next = STYLES[(current + 1) % STYLES.length];
+    try { localStorage.setItem('theme', next); } catch { /* Works without persistence. */ }
+    setStyleSheet(next);
+}
+function initializeDashboard() {
+    const nav = document.querySelector('nav .container');
+    if (!nav) return;
+    const isHome = !!document.querySelector('#home');
+    const home = document.createElement('li');
+    home.dataset.dashboard = '';
+    home.innerHTML = `<a href="./index.html" ${isHome ? 'aria-current="page"' : ''}>home</a>`;
+    nav.querySelector('ul').prepend(home);
+    const identity = document.createElement('div');
+    identity.dataset.dashboard = '';
+    identity.className = 'xbox-identity';
+    identity.innerHTML = '<span>DunsinK<small>Computer Science · Texas A&amp;M</small></span><img src="./LinkedInPFP.jpg" alt="Dunsin Komolafe"><span class="xbox-orb" aria-label="Xbox 360 inspired theme">X</span>';
+    document.body.append(identity);
+    const footer = document.createElement('footer');
+    footer.dataset.dashboard = '';
+    footer.className = 'xbox-footer';
+    footer.innerHTML = '<span><b class="pad-key key-a">A</b> Select <span class="keyboard-hint">/ Enter</span></span><a href="./index.html"><b class="pad-key key-b">B</b> Home</a><button type="button"><b class="pad-key key-y">Y</b> Change style</button><span class="xbox-footer-help">Arrow keys to explore</span><span class="xbox-wordmark">XBOX <strong>360</strong></span>';
+    footer.querySelector('button').addEventListener('click', toggleStyleSheet);
+    document.body.append(footer);
+    if (isHome) {
+        const dashboard = document.createElement('main');
+        dashboard.dataset.dashboard = '';
+        dashboard.className = 'xbox-dashboard';
+        dashboard.setAttribute('aria-label', 'Home dashboard');
+        dashboard.innerHTML = `
+            <div class="xbox-neighbor" aria-hidden="true"><span>discover</span><div>⌕</div></div>
+            <div class="xbox-tiles">
+                <a class="xbox-tile tile-agenda" href="./portfolio.html"><img src="./photos/aggie-agenda/aggieagenda_logo.jpg" alt="Aggie Agenda"><span class="tile-caption">Explore my projects</span></a>
+                <a class="xbox-tile tile-pins" href="./qualifications.html"><svg class="tile-symbol" viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><path d="m30 4 14 14-5 4-5-2-8 9 1 7-4 4-7-9L5 43l-2-2 12-11-9-7 4-4 7 1 9-8-2-5z"/></svg><span class="tile-caption">My skills</span></a>
+                <a class="xbox-tile tile-resume" href="./resume.html"><svg class="tile-symbol" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="24" cy="24" r="18"/><path d="M24 12v13h10"/></svg><span class="tile-caption">Resume</span></a>
+                <button class="xbox-tile tile-profile" type="button" aria-haspopup="dialog"><img src="./LinkedInPFP.jpg" alt=""><span class="profile-heading"><small>WELCOME TO MY PERSONAL WEBSITE</small>Dunsin<br>Komolafe<span>Developer. Student. Aggie.</span></span><span class="tile-caption">Meet Dunsin (Oluwadunsin) Komolafe <span aria-hidden="true">→</span></span></button>
+                <a class="xbox-tile tile-activities" href="./activities.html"><img src="./photos/tamufate.jpg" alt="TAMU FATE"><span class="tile-caption">Life outside of class</span></a>
+                <a class="xbox-tile tile-sandbox" href="./sandbox.html"><span class="sandbox-art" aria-hidden="true">{<span>play</span>}</span><span class="tile-caption">Explore the sandbox</span></a>
+                <a class="xbox-tile tile-github" href="https://github.com/DunsinK" target="_blank" rel="noopener"><span class="code-art" aria-hidden="true">&lt;/&gt;</span><span class="tile-caption">GitHub · DunsinK</span></a>
+                <a class="xbox-tile tile-linkedin" href="https://linkedin.com/in/dunsink" target="_blank" rel="noopener"><strong aria-hidden="true">in</strong><span class="tile-caption">Connect on LinkedIn</span></a>
+                <a class="xbox-tile tile-devpost" href="https://devpost.com/DunsinK" target="_blank" rel="noopener"><strong>BUILD<br>LEARN<br>CREATE</strong><span class="tile-caption">Devpost</span></a>
+            </div>
+            <div class="xbox-neighbor neighbor-right" aria-hidden="true"><span>social</span><div>Friends</div><div>Community</div></div>
+            <p class="dashboard-subtitle">Computer Science at Texas A&amp;M 2028 <span>Full Stack Web Development · AI Agents · Computer Vision</span></p>
+            <div class="dashboard-contact"><a href="mailto:dunsink@tamu.edu">dunsink@tamu.edu</a><span> / </span><a href="mailto:dunsinkomolafe@gmail.com">dunsinkomolafe@gmail.com</a></div>`;
+        document.querySelector('#home').before(dashboard);
+        // Preserve the original introduction as the source of truth for all themes.
+        const profile = document.createElement('dialog');
+        profile.className = 'xbox-profile';
+        profile.setAttribute('aria-label', 'About Dunsin Komolafe');
+        const close = document.createElement('button');
+        close.className = 'profile-close';
+        close.textContent = 'B · Back to dashboard';
+        close.addEventListener('click', () => profile.close());
+        const content = document.createElement('div');
+        content.innerHTML = document.querySelector('#home').innerHTML;
+        profile.append(close, content);
+        document.body.append(profile);
+        dashboard.querySelector('.tile-profile').addEventListener('click', () => profile.showModal());
+    }
+    document.addEventListener('keydown', event => {
+        if (!document.documentElement.classList.contains('xbox-theme') || document.querySelector('dialog[open]') || event.altKey || event.ctrlKey || event.metaKey) return;
+        if (!event.key.startsWith('Arrow') || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
+        const tiles = [...document.querySelectorAll('.xbox-tile, .project-card, nav a, nav button')].filter(el => el.getClientRects().length);
+        const active = document.activeElement;
+        if (!tiles.includes(active)) {
+            (document.querySelector('.tile-profile') || tiles[0])?.focus();
+            event.preventDefault();
+            return;
+        }
+        const box = active.getBoundingClientRect();
+        const x = box.left + box.width / 2, y = box.top + box.height / 2;
+        const horizontal = event.key === 'ArrowLeft' || event.key === 'ArrowRight';
+        const sign = event.key === 'ArrowLeft' || event.key === 'ArrowUp' ? -1 : 1;
+        const candidates = tiles.filter(el => el !== active && (!active.matches('.xbox-tile') || el.matches('.xbox-tile'))).map(el => {
+            const rect = el.getBoundingClientRect();
+            const dx = rect.left + rect.width / 2 - x, dy = rect.top + rect.height / 2 - y;
+            return { el, forward: (horizontal ? dx : dy) * sign, sideways: Math.abs(horizontal ? dy : dx) };
+        }).filter(item => item.forward > 1).sort((a, b) => (a.forward + a.sideways * 3) - (b.forward + b.sideways * 3));
+        candidates[0]?.el.focus();
+        event.preventDefault();
+    });
+    setStyleSheet(document.getElementById('stylesheet').getAttribute('href'));
+}
+setStyleSheet(STYLES[currentStyleIndex()]);
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeDashboard);
+else initializeDashboard();
