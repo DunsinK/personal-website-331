@@ -1,10 +1,17 @@
-const STYLES = ['./styles/style1.css', './styles/style2.css', './styles/style3.css'];
+const STYLES = ['./styles/style3.css', './styles/style1.css', './styles/style2.css'];
 function currentStyleIndex() {
-    try { return Math.max(0, STYLES.indexOf(localStorage.getItem('theme'))); } catch { return 0; }
+    try {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === null) return 0;
+        const savedIndex = STYLES.indexOf(savedTheme);
+        return savedIndex >= 0 ? savedIndex : 0;
+    } catch {
+        return 0;
+    }
 }
 function setStyleSheet(href) {
     document.getElementById('stylesheet').setAttribute('href', href);
-    const xbox = href === STYLES[2];
+    const xbox = href === STYLES[0];
     document.documentElement.classList.toggle('xbox-theme', xbox);
     document.querySelectorAll('[data-dashboard]').forEach(node => { node.hidden = !xbox; });
     if (!xbox) document.querySelector('.xbox-profile[open]')?.close();
