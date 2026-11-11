@@ -59,10 +59,43 @@ function initializeDashboard() {
                 <a class="xbox-tile tile-linkedin" href="https://linkedin.com/in/dunsink" target="_blank" rel="noopener"><strong aria-hidden="true">in</strong><span class="tile-caption">Connect on LinkedIn</span></a>
                 <a class="xbox-tile tile-devpost" href="https://devpost.com/DunsinK" target="_blank" rel="noopener"><strong>BUILD<br>LEARN<br>CREATE</strong><span class="tile-caption">Devpost</span></a>
             </div>
-            <div class="xbox-neighbor neighbor-right" aria-hidden="true"><span>social</span><div>Friends</div><div>Community</div></div>
+            <button class="xbox-neighbor neighbor-right" type="button" aria-label="Open social view"><span>social</span><div>Friends</div><div>Community</div></button>
             <p class="dashboard-subtitle">Computer Science at Texas A&amp;M 2028 <span>Full Stack Web Development · AI Agents · Computer Vision</span></p>
             <div class="dashboard-contact"><a href="mailto:dunsink@tamu.edu">dunsink@tamu.edu</a><span> / </span><a href="mailto:dunsinkomolafe@gmail.com">dunsinkomolafe@gmail.com</a></div>`;
         document.querySelector('#home').before(dashboard);
+        const social = document.createElement('section');
+        social.className = 'xbox-social-view';
+        social.setAttribute('aria-label', 'Social');
+        social.innerHTML = `
+            <button class="social-back" type="button">‹ home</button>
+            <div class="social-content">
+                <div class="social-menu" aria-label="Social menu">
+                    <button class="social-menu-tile" type="button">Friends</button>
+                    <button class="social-menu-tile is-selected" type="button">Activity Feed</button>
+                    <button class="social-menu-tile" type="button">Community</button>
+                </div>
+                <div class="social-feature">
+                    <p class="social-kicker">SOCIAL</p>
+                    <h2>Activity Feed</h2>
+                    <p>Connect with me and follow what I am building.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/DunsinK" target="_blank" rel="noopener">GitHub</a>
+                        <a href="https://linkedin.com/in/dunsink" target="_blank" rel="noopener">LinkedIn</a>
+                        <a href="https://devpost.com/DunsinK" target="_blank" rel="noopener">Devpost</a>
+                    </div>
+                </div>
+            </div>`;
+        dashboard.append(social);
+        const openSocial = () => {
+            dashboard.classList.add('social-open');
+            social.querySelector('.social-back').focus();
+        };
+        const closeSocial = () => {
+            dashboard.classList.remove('social-open');
+            dashboard.querySelector('.neighbor-right').focus();
+        };
+        dashboard.querySelector('.neighbor-right').addEventListener('click', openSocial);
+        social.querySelector('.social-back').addEventListener('click', closeSocial);
         // Preserve the original introduction as the source of truth for all themes.
         const profile = document.createElement('dialog');
         profile.className = 'xbox-profile';
