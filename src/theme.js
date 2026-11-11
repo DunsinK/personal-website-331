@@ -47,7 +47,7 @@ function initializeDashboard() {
         dashboard.className = 'xbox-dashboard';
         dashboard.setAttribute('aria-label', 'Home dashboard');
         dashboard.innerHTML = `
-            <div class="xbox-neighbor" aria-hidden="true"><span>discover</span><div>⌕</div></div>
+            <button class="xbox-neighbor neighbor-left" type="button" aria-label="Open discover view"><span>discover</span><div>⌕</div></button>
             <div class="xbox-tiles">
                 <a class="xbox-tile tile-agenda" href="./portfolio.html"><img src="./photos/aggie-agenda/aggieagenda_logo.jpg" alt="Aggie Agenda"><span class="tile-caption">Explore my projects</span></a>
                 <a class="xbox-tile tile-pins" href="./qualifications.html"><svg class="tile-symbol" viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><path d="m30 4 14 14-5 4-5-2-8 9 1 7-4 4-7-9L5 43l-2-2 12-11-9-7 4-4 7 1 9-8-2-5z"/></svg><span class="tile-caption">My skills</span></a>
@@ -64,7 +64,8 @@ function initializeDashboard() {
             <div class="dashboard-contact"><a href="mailto:dunsink@tamu.edu">dunsink@tamu.edu</a><span> / </span><a href="mailto:dunsinkomolafe@gmail.com">dunsinkomolafe@gmail.com</a></div>`;
         document.querySelector('#home').before(dashboard);
         const social = document.createElement('section');
-        social.className = 'xbox-social-view';
+        social.className = 'xbox-social-view xbox-view';
+        social.dataset.view = 'social';
         social.setAttribute('aria-label', 'Social');
         social.innerHTML = `
             <button class="social-back" type="button">‹ home</button>
@@ -84,18 +85,57 @@ function initializeDashboard() {
                         <a href="https://devpost.com/DunsinK" target="_blank" rel="noopener">Devpost</a>
                     </div>
                 </div>
-            </div>`;
+            </div>
+            <div class="view-nav"><button type="button" data-view-prev>‹ previous</button><button type="button" data-view-next>next ›</button></div>`;
         dashboard.append(social);
-        const openSocial = () => {
-            dashboard.classList.add('social-open');
-            social.querySelector('.social-back').focus();
+        const viewDefinitions = [
+            ['discover', 'Discover', 'Explore highlights from my work, interests, and experience.'],
+            ['settings', 'Settings', 'Theme and dashboard settings will live here.'],
+            ['games', 'Games', 'A place for interactive experiments and games.'],
+            ['tv-movies', 'TV & Movies', 'A media corner for recommendations and favorites.']
+        ];
+        const extraViews = viewDefinitions.map(([id, title, description]) => {
+            const panel = document.createElement('section');
+            panel.className = `xbox-view xbox-boilerplate-view view-${id}`;
+            panel.dataset.view = id;
+            panel.setAttribute('aria-label', title);
+            panel.innerHTML = `<div class="view-heading"><p class="social-kicker">XBOX DASHBOARD</p><h2>${title}</h2><p>${description}</p><span>Coming soon</span></div><div class="view-nav"><button type="button" data-view-prev>‹ previous</button><button type="button" data-view-next>next ›</button></div>`;
+            dashboard.append(panel);
+            return panel;
+        });
+        const panels = [social, ...extraViews];
+        const viewNames = ['home', 'social', ...viewDefinitions.map(([id]) => id)];
+        const homeElements = [...dashboard.children].filter(element => !element.classList.contains('xbox-view'));
+        let currentView = 0;
+        const setView = (nextView, focus = true) => {
+            currentView = (nextView + viewNames.length) % viewNames.length;
+            dashboard.dataset.view = viewNames[currentView];
+            homeElements.forEach(element => {
+                const isVisible = currentView === 0;
+                element.style.transform = isVisible ? 'translateX(0)' : 'translateX(-110%)';
+                element.style.opacity = isVisible ? '1' : '0';
+                element.style.pointerEvents = isVisible ? '' : 'none';
+            });
+            panels.forEach((panel, index) => {
+                const panelView = index + 1;
+                const offset = panelView - currentView;
+                panel.style.transform = `translateX(${offset * 110}%)`;
+                panel.style.opacity = offset === 0 ? '1' : '0';
+                panel.style.pointerEvents = offset === 0 ? 'auto' : 'none';
+            });
+            if (focus) {
+                const target = currentView === 0
+                    ? dashboard.querySelector('.tile-profile')
+                    : panels[currentView - 1].querySelector('button, a');
+                target?.focus();
+            }
         };
-        const closeSocial = () => {
-            dashboard.classList.remove('social-open');
-            dashboard.querySelector('.neighbor-right').focus();
-        };
-        dashboard.querySelector('.neighbor-right').addEventListener('click', openSocial);
-        social.querySelector('.social-back').addEventListener('click', closeSocial);
+        dashboard.querySelector('.neighbor-left').addEventListener('click', () => setView(viewNames.length - 1));
+        dashboard.querySelector('.neighbor-right').addEventListener('click', () => setView(1));
+        dashboard.querySelectorAll('[data-view-prev]').forEach(button => button.addEventListener('click', () => setView(currentView - 1)));
+        dashboard.querySelectorAll('[data-view-next]').forEach(button => button.addEventListener('click', () => setView(currentView + 1)));
+        social.querySelector('.social-back').addEventListener('click', () => setView(0));
+        setView(0, false);
         // Preserve the original introduction as the source of truth for all themes.
         const profile = document.createElement('dialog');
         profile.className = 'xbox-profile';
@@ -113,6 +153,23 @@ function initializeDashboard() {
     document.addEventListener('keydown', event => {
         if (!document.documentElement.classList.contains('xbox-theme') || document.querySelector('dialog[open]') || event.altKey || event.ctrlKey || event.metaKey) return;
         if (!event.key.startsWith('Arrow') || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
+        const dashboard = document.querySelector('.xbox-dashboard');
+        if (dashboard && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+            const viewNames = ['home', 'social', 'discover', 'settings', 'games', 'tv-movies'];
+            const currentView = viewNames.indexOf(dashboard.dataset.view || 'home');
+            const nextView = event.key === 'ArrowRight' ? currentView + 1 : currentView - 1;
+            const nextName = viewNames[(nextView + viewNames.length) % viewNames.length];
+            const target = nextName === 'home'
+                ? dashboard.querySelector('.social-back')
+                : currentView === 0
+                    ? dashboard.querySelector(event.key === 'ArrowRight' ? '.neighbor-right' : '.neighbor-left')
+                    : dashboard.querySelector(`[data-view="${viewNames[currentView]}"] [data-view-${event.key === 'ArrowRight' ? 'next' : 'prev'}]`);
+            if (target) {
+                target.click();
+                event.preventDefault();
+                return;
+            }
+        }
         const tiles = [...document.querySelectorAll('.xbox-tile, .project-card, nav a, nav button')].filter(el => el.getClientRects().length);
         const active = document.activeElement;
         if (!tiles.includes(active)) {
