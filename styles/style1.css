@@ -1292,4 +1292,9 @@ footer {
   filter:  contrast(150%) brightness(0%);
 }
 
+/* Xbox dashboard markup ships in the HTML. This theme leaves it out of view. */
+html:not(.xbox-theme) [data-dashboard] {
+    display: none !important;
+}
+
 /*#endregion*/

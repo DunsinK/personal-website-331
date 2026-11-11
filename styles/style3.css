@@ -86,3 +86,6 @@ nav .container { justify-content: flex-start; }
 .project-image { min-height: 145px; }
 .activity-body p:not(.activity-role) { color: #444; }
 .project-modal { color: #333; background: #f1f2ef; }
+/* Tiles are the Xbox home menu. Interior pages keep the text nav. Y on the footer changes the theme. */
+.xbox-theme:has(#home) nav ul { display: none; }
+.xbox-theme nav li:has(.nav-button) { display: none; }

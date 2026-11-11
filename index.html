@@ -6,7 +6,6 @@
     <meta name="description" content="Personal website of Dunsin Komolafe - Developer & Student">
     <title>Dunsin Komolafe | Personal Website</title>
     <link id = "stylesheet" rel="stylesheet" href="./styles/style3.css">
-    
 </head>
 <body>
     <!-- Navigation -->
@@ -14,19 +13,170 @@
         <div class="container">
             <a href="./index.html" class="logo">DK</a>
             <ul> <!-- will make this alligned middle  -->
+                <li data-dashboard><a href="./index.html" aria-current="page">home</a></li>
                 <li><a href="./portfolio.html">Portfolio</a></li>
                 <li><a href="./qualifications.html">Qualifications</a></li>
                 <li><a href="./activities.html">Activities</a></li>
                 <li><a href = "./resume.html">Resume</a></li>
                 <li><a href="./sandbox.html">Sandbox</a></li>
                 <li><button class="nav-button" onclick="toggleStyleSheet()">Change Style</button></li>
-                <script src="./src/theme.js"></script> 
+                <script src="./src/alan-wake.js"></script>
+                <script src="./src/theme.js"></script>
             </ul>
-            
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Xbox home. Tiles open real pages. The sections below are the horizontal blades. -->
+    <main class="xbox-dashboard" data-dashboard data-view="home" aria-label="Home dashboard">
+        <button class="xbox-neighbor neighbor-left" type="button" data-home-neighbor="prev" aria-label="Go to TV &amp; Movies">
+            <span>‹ TV &amp; Movies</span>
+            <div>TV &amp; Movies</div>
+        </button>
+        <div class="xbox-tiles">
+            <a class="xbox-tile tile-agenda" href="./portfolio.html">
+                <img src="./photos/aggie-agenda/aggieagenda_logo.jpg" alt="Aggie Agenda">
+                <span class="tile-caption">Explore my projects</span>
+            </a>
+            <a class="xbox-tile tile-pins" href="./qualifications.html">
+                <svg class="tile-symbol" viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><path d="m30 4 14 14-5 4-5-2-8 9 1 7-4 4-7-9L5 43l-2-2 12-11-9-7 4-4 7 1 9-8-2-5z"/></svg>
+                <span class="tile-caption">My skills</span>
+            </a>
+            <a class="xbox-tile tile-resume" href="./resume.html">
+                <svg class="tile-symbol" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><circle cx="24" cy="24" r="18"/><path d="M24 12v13h10"/></svg>
+                <span class="tile-caption">Resume</span>
+            </a>
+            <button class="xbox-tile tile-profile" type="button" aria-haspopup="dialog">
+                <img src="./LinkedInPFP.jpg" alt="">
+                <span class="profile-heading"><small>WELCOME TO MY PERSONAL WEBSITE</small>Dunsin<br>Komolafe<span>Developer. Student. Aggie.</span></span>
+                <span class="tile-caption">Meet Dunsin (Oluwadunsin) Komolafe <span aria-hidden="true">→</span></span>
+            </button>
+            <a class="xbox-tile tile-activities" href="./activities.html">
+                <img src="./photos/tamufate.jpg" alt="TAMU FATE">
+                <span class="tile-caption">Life outside of class</span>
+            </a>
+            <a class="xbox-tile tile-sandbox" href="./sandbox.html">
+                <span class="sandbox-art" aria-hidden="true">{<span>play</span>}</span>
+                <span class="tile-caption">Explore the sandbox</span>
+            </a>
+            <a class="xbox-tile tile-github" href="https://github.com/DunsinK" target="_blank" rel="noopener">
+                <span class="code-art" aria-hidden="true">&lt;/&gt;</span>
+                <span class="tile-caption">GitHub · DunsinK</span>
+            </a>
+            <a class="xbox-tile tile-linkedin" href="https://linkedin.com/in/dunsink" target="_blank" rel="noopener">
+                <strong aria-hidden="true">in</strong>
+                <span class="tile-caption">Connect on LinkedIn</span>
+            </a>
+            <a class="xbox-tile tile-devpost" href="https://devpost.com/DunsinK" target="_blank" rel="noopener">
+                <strong>BUILD<br>LEARN<br>CREATE</strong>
+                <span class="tile-caption">Devpost</span>
+            </a>
+        </div>
+        <button class="xbox-neighbor neighbor-right" type="button" data-home-neighbor="next" aria-label="Go to Social">
+            <span>Social ›</span>
+            <div>Friends</div>
+            <div>Community</div>
+        </button>
+        <p class="dashboard-subtitle">Computer Science at Texas A&amp;M 2028 <span>Full Stack Web Development · AI Agents · Computer Vision</span></p>
+        <div class="dashboard-contact">
+            <a href="mailto:dunsink@tamu.edu">dunsink@tamu.edu</a>
+            <span> / </span>
+            <a href="mailto:dunsinkomolafe@gmail.com">dunsinkomolafe@gmail.com</a>
+        </div>
+
+        <section class="xbox-social-view xbox-view" data-view="social" aria-label="Social">
+            <button class="social-back" type="button">‹ home</button>
+            <div class="social-content">
+                <div class="social-menu" aria-label="Social menu">
+                    <button class="social-menu-tile" type="button">Friends</button>
+                    <button class="social-menu-tile is-selected" type="button">Activity Feed</button>
+                    <button class="social-menu-tile" type="button">Community</button>
+                </div>
+                <div class="social-feature">
+                    <p class="social-kicker">SOCIAL</p>
+                    <h2>Activity Feed</h2>
+                    <p>Connect with me and follow what I am building.</p>
+                    <div class="social-links">
+                        <a href="https://github.com/DunsinK" target="_blank" rel="noopener">GitHub</a>
+                        <a href="https://linkedin.com/in/dunsink" target="_blank" rel="noopener">LinkedIn</a>
+                        <a href="https://devpost.com/DunsinK" target="_blank" rel="noopener">Devpost</a>
+                    </div>
+                </div>
+            </div>
+            <div class="view-nav">
+                <button type="button" data-view-prev>‹ previous</button>
+                <button type="button" data-view-next>next ›</button>
+            </div>
+        </section>
+
+        <section class="xbox-view xbox-boilerplate-view view-discover" data-view="discover" aria-label="Discover">
+            <div class="view-heading">
+                <p class="social-kicker">XBOX DASHBOARD</p>
+                <h2>Discover</h2>
+                <p>Explore highlights from my work, interests, and experience.</p>
+                <span>Coming soon</span>
+            </div>
+            <div class="view-nav">
+                <button type="button" data-view-prev>‹ previous</button>
+                <button type="button" data-view-next>next ›</button>
+            </div>
+        </section>
+
+        <section class="xbox-view xbox-boilerplate-view view-settings" data-view="settings" aria-label="Settings">
+            <div class="view-heading">
+                <p class="social-kicker">XBOX DASHBOARD</p>
+                <h2>Settings</h2>
+                <p>Theme and dashboard settings will live here.</p>
+                <span>Coming soon</span>
+            </div>
+            <div class="view-nav">
+                <button type="button" data-view-prev>‹ previous</button>
+                <button type="button" data-view-next>next ›</button>
+            </div>
+        </section>
+
+        <section class="xbox-view xbox-boilerplate-view view-games" data-view="games" aria-label="Games">
+            <div class="view-heading games-heading">
+                <p class="social-kicker">XBOX DASHBOARD</p>
+                <h2>Games</h2>
+                <p>A place for interactive experiments and games.</p>
+                <button class="alan-launch" type="button">Play Alan Wake: Night Run</button>
+            </div>
+            <div class="view-nav">
+                <button type="button" data-view-prev>‹ previous</button>
+                <button type="button" data-view-next>next ›</button>
+            </div>
+            <div class="alan-game">
+                <div class="alan-loading">
+                    <p class="social-kicker">NIGHT RUN</p>
+                    <h2>Alan Wake</h2>
+                    <p>Something is moving in the dark.</p>
+                    <button class="alan-start" type="button">Start game</button>
+                    <span class="alan-status" role="status"></span>
+                </div>
+                <div class="alan-stage" hidden>
+                    <div class="alan-hud"><span>Light ammo: <b class="alan-ammo">∞</b></span><span>Ghosts: <b class="alan-score">0</b></span></div>
+                    <div class="alan-canvas"></div>
+                    <p class="alan-controls">WASD move · mouse aim · click or Space shoot · Esc exit</p>
+                    <button class="alan-exit" type="button">Exit game</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="xbox-view xbox-boilerplate-view view-tv-movies" data-view="tv-movies" aria-label="TV &amp; Movies">
+            <div class="view-heading">
+                <p class="social-kicker">XBOX DASHBOARD</p>
+                <h2>TV &amp; Movies</h2>
+                <p>A media corner for recommendations and favorites.</p>
+                <span>Coming soon</span>
+            </div>
+            <div class="view-nav">
+                <button type="button" data-view-prev>‹ previous</button>
+                <button type="button" data-view-next>next ›</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Hero Section. Shown in the other themes, and copied into the Xbox profile dialog. -->
     <section id="home" class="hero">
         <div class="hero-content">
             <div>
@@ -38,7 +188,6 @@
                 </div> <!--image part-->
                 <div class="hero-text">
                     <p class="hero-name">Dunsin (Oluwadunsin) Komolafe</p>
-                    
                     <p class ="hero-subname">Computer Science at Texas A&M 2028 </p>
                     <p class="tagline">I'm an aspiring Software Engineer. My specialties include Full Stack Web Development, AI Agents, and Computer Vision.</p>
                     <p class="hero-blurb">Check out Portfolio to see my technical projects, Qualifications to see my technical skills, or Activities to learn a bit more about me.</p>
@@ -76,22 +225,6 @@
             or
             <a href="mailto:dunsinkomolafe@gmail.com">dunsinkomolafe@gmail.com</a>
         </p>
-
     </section>
-
-    <!--Social-->
-    <section>
-
-    </section>
-
-    <!--Discover-->
-    <secition>
-        
-    </secition>
-     
-
-
-
-
 </body>
 </html>
